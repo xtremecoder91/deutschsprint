@@ -5,13 +5,13 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "setup-assets.sh",
+      "*.sh",
       "*.md"
     ],
     "rewrites": [
       {
         "source": "/",
-        "destination": "/deutschsprint-3d.html"
+        "destination": "/index.html"
       }
     ],
     "headers": [
@@ -21,6 +21,10 @@
           {
             "key": "Cache-Control",
             "value": "public, max-age=604800"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
           }
         ]
       },
@@ -29,7 +33,7 @@
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "public, max-age=3600"
+            "value": "no-cache"
           }
         ]
       }
