@@ -1,0 +1,4389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DeutschSprint — Speak German, Don't Just Tap It</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  :root {
+    --bg: #FAF7F2;
+    --surface: #FFFFFF;
+    --ink: #1A1614;
+    --ink-soft: #6B6560;
+    --ink-faint: #B8B2AC;
+    --line: #EDE8E1;
+    --accent: #FF5C39;
+    --accent-soft: #FFE8E0;
+    --gold: #E8B931;
+    --gold-soft: #FFF4D6;
+    --green: #2D8659;
+    --green-soft: #D9F0E3;
+    --blue: #3D5AFE;
+    --purple: #7C3AED;
+    --purple-soft: #EDE9FE;
+    --shadow-sm: 0 1px 2px rgba(26,22,20,0.04);
+    --shadow-md: 0 4px 12px rgba(26,22,20,0.06);
+    --shadow-lg: 0 12px 32px rgba(26,22,20,0.08);
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  
+  /* TOP BAR */
+  .topbar {
+    position: sticky; top: 0;
+    background: rgba(250, 247, 242, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    z-index: 100;
+    padding: 14px 20px;
+  }
+  .topbar-inner {
+    max-width: 760px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  /* DEUTSCHSPRINT LOGO */
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: inherit;
+  }
+  .logo-mark {
+    width: 38px; height: 38px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .logo-mark svg { width: 100%; height: 100%; display: block; }
+  
+  /* Animation: sprint pulse — chevron and trail-line slide forward rhythmically */
+  .logo-mark .ds-trail {
+    transform-origin: 0 50%;
+    animation: dsTrail 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .logo-mark .ds-chevron {
+    animation: dsChevron 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .logo-mark .ds-flag-stripe {
+    animation: dsFlag 2.4s ease-in-out infinite;
+  }
+  
+  @keyframes dsTrail {
+    0%, 100% { transform: scaleX(0.6); opacity: 0.4; }
+    50% { transform: scaleX(1); opacity: 1; }
+  }
+  @keyframes dsChevron {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(2px); }
+  }
+  @keyframes dsFlag {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+  
+  /* Boot animation — runs once on first paint */
+  .logo-mark.logo-boot .ds-trail { animation: dsTrailBoot 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1, dsTrail 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.9s infinite; }
+  .logo-mark.logo-boot .ds-chevron { animation: dsChevronBoot 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1, dsChevron 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.9s infinite; }
+  
+  @keyframes dsTrailBoot {
+    0% { transform: scaleX(0); opacity: 0; }
+    60% { transform: scaleX(1.1); opacity: 1; }
+    100% { transform: scaleX(0.6); opacity: 0.4; }
+  }
+  @keyframes dsChevronBoot {
+    0% { transform: translateX(-12px); opacity: 0; }
+    60% { transform: translateX(3px); opacity: 1; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+  
+  .logo:hover .ds-trail { animation-duration: 1.2s; }
+  .logo:hover .ds-chevron { animation-duration: 1.2s; }
+  
+  .logo-text {
+    display: flex; flex-direction: column; line-height: 1;
+  }
+  .logo-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .logo-name .accent { color: var(--accent); font-style: italic; }
+  .logo-tag {
+    font-size: 9px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+  
+  .topbar-stats { display: flex; gap: 8px; align-items: center; }
+  .pill {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 11px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    transition: transform 0.2s;
+  }
+  .pill:hover { transform: translateY(-1px); }
+  .pill-streak { color: var(--accent); }
+  .pill-streak.cold { color: var(--ink-faint); }
+  .pill-hearts { color: #E63946; }
+  
+  /* CONTAINER */
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 100px; }
+  
+  /* HERO / DAILY */
+  .daily-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .daily-card::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .daily-greet {
+    font-size: 13px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 600; margin-bottom: 8px;
+    position: relative;
+  }
+  .daily-headline {
+    font-family: 'Fraunces', serif;
+    font-size: 30px; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.1;
+    margin-bottom: 20px; position: relative;
+  }
+  .daily-headline em { font-style: italic; color: var(--accent); font-weight: 600; }
+  
+  .daily-progress-track {
+    height: 12px; background: var(--line);
+    border-radius: 100px; overflow: hidden; position: relative;
+  }
+  .daily-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #FF8A65);
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .daily-progress-fill::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2.4s infinite;
+  }
+  @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  
+  .daily-progress-meta {
+    display: flex; justify-content: space-between;
+    margin: 10px 0 20px;
+    font-size: 13px; color: var(--ink-soft); font-weight: 500;
+  }
+  .daily-progress-meta strong { color: var(--ink); font-weight: 700; }
+  
+  .start-btn {
+    width: 100%;
+    background: var(--ink); color: var(--surface);
+    border: none; padding: 16px 24px;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    -webkit-appearance: none;
+  }
+  .start-btn:hover { transform: translateY(-1px); background: #2A2420; }
+  .start-btn .arrow { transition: transform 0.2s; }
+  .start-btn:hover .arrow { transform: translateX(4px); }
+  
+  /* WEAK WORDS CAROUSEL (SRS) */
+  .review-card {
+    background: linear-gradient(135deg, var(--purple-soft) 0%, var(--surface) 60%);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .review-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .review-title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .review-title-icon { font-size: 20px; }
+  .review-cta {
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .review-cta:hover { transform: scale(1.05); }
+  
+  .review-words {
+    display: flex; gap: 8px; overflow-x: auto;
+    margin: 0 -20px; padding: 0 20px 4px;
+    scrollbar-width: none;
+  }
+  .review-words::-webkit-scrollbar { display: none; }
+  .review-word {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 14px;
+    flex-shrink: 0;
+    min-width: 110px;
+  }
+  .review-word-de {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .review-word-en {
+    font-size: 11px; color: var(--ink-soft);
+  }
+  .review-word-meta {
+    font-size: 10px; color: var(--purple);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  
+  /* 3D SCENE CARD — premium hybrid feature */
+  .scene3d-card {
+    background: linear-gradient(135deg, #1A1614 0%, #2D2520 100%);
+    border-radius: 20px;
+    padding: 0;
+    margin-bottom: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 12px 32px rgba(26,22,20,0.15);
+  }
+  .scene3d-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(26,22,20,0.2); }
+  .scene3d-card.locked { opacity: 0.5; cursor: not-allowed; }
+  .scene3d-card.locked:hover { transform: none; }
+  
+  .scene3d-preview {
+    width: 100%;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scene3d-preview svg { width: 100%; height: 100%; }
+  
+  .scene3d-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: rgba(232, 185, 49, 0.95);
+    color: var(--ink);
+    padding: 5px 11px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .scene3d-content {
+    padding: 18px 20px 20px;
+    color: white;
+  }
+  .scene3d-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .scene3d-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .scene3d-desc {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+  .scene3d-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+  .scene3d-card:hover .scene3d-cta { transform: scale(1.03); }
+  
+  .scene3d-locked-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 22, 20, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    color: white;
+  }
+  .scene3d-locked-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.6; }
+  .scene3d-locked-text { font-size: 13px; opacity: 0.7; max-width: 240px; line-height: 1.4; }
+  
+  .scene3d-completed {
+    position: absolute;
+    bottom: 18px;
+    right: 20px;
+    background: var(--green);
+    color: white;
+    padding: 5px 11px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* SCENARIO TEASER */
+  .scenario-card {
+    background: linear-gradient(135deg, #FEF08A 0%, var(--surface) 70%);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: transform 0.25s;
+  }
+  .scenario-card:hover { transform: translateY(-2px); }
+  .scenario-card.locked { opacity: 0.5; cursor: not-allowed; }
+  .scenario-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .scenario-tag {
+    font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 700;
+    color: var(--gold);
+    padding: 4px 10px;
+    background: var(--gold-soft);
+    border-radius: 100px;
+  }
+  .scenario-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .scenario-subtitle {
+    font-size: 13px; color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .scenario-preview {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex; gap: 10px; align-items: center;
+    font-size: 13px;
+    border: 1px solid var(--line);
+  }
+  .scenario-preview-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  
+  /* WEEK STREAK */
+  .streak-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .section-label {
+    font-size: 11px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 700; margin-bottom: 4px;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px; font-weight: 700;
+    letter-spacing: -0.02em; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day-cell {
+    aspect-ratio: 1; border-radius: 10px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--bg); border: 1.5px solid var(--line);
+    font-size: 11px; font-weight: 600;
+    color: var(--ink-soft);
+    transition: all 0.3s;
+  }
+  .day-cell.completed { background: var(--accent); border-color: var(--accent); color: white; }
+  .day-cell.completed::after { content: '✓'; font-size: 13px; margin-top: 1px; }
+  .day-cell.today { border-color: var(--ink); border-width: 2px; color: var(--ink); }
+  .day-cell.today.completed { color: white; }
+  .day-cell .day-num { font-family: 'Fraunces', serif; font-weight: 700; font-size: 13px; }
+  
+  .floor-info {
+    margin-top: 14px; padding: 12px 14px;
+    background: var(--bg); border-radius: 12px;
+    font-size: 12px; color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .floor-info strong { color: var(--ink); font-weight: 700; }
+  .floor-progress {
+    height: 6px;
+    background: var(--line);
+    border-radius: 100px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .floor-progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 100px;
+    transition: width 0.4s;
+  }
+  
+  /* CURRICULUM */
+  .level-section { margin-bottom: 24px; }
+  .level-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+    padding: 12px 16px;
+    background: var(--ink); color: white;
+    border-radius: 14px;
+  }
+  .level-badge {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 800;
+    font-size: 13px; color: white;
+  }
+  .level-info { flex: 1; }
+  .level-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .level-tag {
+    font-size: 11px; opacity: 0.7;
+    text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
+  }
+  .level-progress-tag {
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 100px;
+  }
+  .unit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .unit-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .unit-card:hover:not(.locked) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--ink-faint);
+  }
+  .unit-card.locked { opacity: 0.45; cursor: not-allowed; }
+  .unit-card.completed {
+    background: linear-gradient(135deg, var(--green-soft) 0%, var(--surface) 70%);
+    border-color: var(--green);
+  }
+  .unit-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    background: var(--bg);
+    margin-bottom: 10px;
+  }
+  .unit-card.completed .unit-icon { background: var(--green); color: white; }
+  .unit-num {
+    font-size: 10px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 700; margin-bottom: 2px;
+  }
+  .unit-name {
+    font-family: 'Fraunces', serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: -0.01em; line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .unit-meta { font-size: 11px; color: var(--ink-soft); }
+  .unit-progress-mini {
+    margin-top: 8px;
+    height: 4px;
+    background: var(--line);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .unit-progress-mini-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 100px;
+    transition: width 0.4s;
+  }
+  
+  /* LESSON SCREEN */
+  .lesson-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lesson-screen.active { display: flex; }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .lesson-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .close-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--ink-soft);
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+  .close-btn:hover { background: var(--bg); color: var(--ink); }
+  .lesson-progress-top {
+    flex: 1; height: 10px;
+    background: var(--line);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .lesson-progress-top-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 100px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hearts-display {
+    display: flex; align-items: center; gap: 4px;
+    color: #E63946; font-weight: 700; font-size: 14px;
+  }
+  .lesson-body {
+    flex: 1;
+    max-width: 600px; width: 100%;
+    margin: 0 auto;
+    padding: 28px 20px;
+    display: flex; flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  /* TEACH SCREEN */
+  .teach-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 100px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .teach-title {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .teach-title em { font-style: italic; color: var(--accent); }
+  .teach-subtitle {
+    font-size: 16px; color: var(--ink-soft);
+    margin-bottom: 24px; line-height: 1.5;
+  }
+  .teach-block {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 10px;
+  }
+  .teach-block-de {
+    font-family: 'Fraunces', serif;
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+    flex-wrap: wrap;
+  }
+  .teach-block-de em { font-style: italic; color: var(--accent); font-weight: 700; }
+  .teach-block-en {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .teach-block-note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  
+  /* GRAMMAR TABLE */
+  .grammar-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .grammar-table th, .grammar-table td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .grammar-table th {
+    background: var(--bg);
+    font-size: 10px; font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .grammar-table tr:last-child td { border-bottom: none; }
+  .grammar-table .de-cell {
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 15px;
+  }
+  
+  /* QUESTIONS */
+  .question-prompt {
+    font-size: 13px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-weight: 700; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  
+  /* WHY BUTTON */
+  .why-btn {
+    background: none;
+    border: 1px solid var(--purple);
+    color: var(--purple);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+  .why-btn:hover { background: var(--purple); color: white; }
+  
+  .why-panel {
+    background: var(--purple-soft);
+    border: 1px solid var(--purple);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+    animation: slideDown 0.3s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .why-panel-title {
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  
+  /* ASSET ILLUSTRATION */
+  .illustration {
+    width: 100%;
+    aspect-ratio: 16/10;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #FFF4D6 0%, #FFE8E0 100%);
+  }
+  .illustration img {
+    width: 60%; height: 60%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+  }
+  .illustration .svg-art {
+    width: 65%;
+    height: 65%;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+  }
+  
+  /* Per-category gradients */
+  .illustration[data-cat="alphabet"] { background: linear-gradient(135deg, #E0E7FF 0%, #FCE7F3 100%); }
+  .illustration[data-cat="greetings"] { background: linear-gradient(135deg, #FEF3C7 0%, #FFE4E6 100%); }
+  .illustration[data-cat="numbers"] { background: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 100%); }
+  .illustration[data-cat="pronouns"] { background: linear-gradient(135deg, #F3E8FF 0%, #FCE7F3 100%); }
+  .illustration[data-cat="articles"] { background: linear-gradient(135deg, #FED7AA 0%, #FECACA 100%); }
+  .illustration[data-cat="sein"] { background: linear-gradient(135deg, #BBF7D0 0%, #BAE6FD 100%); }
+  .illustration[data-cat="haben"] { background: linear-gradient(135deg, #FEF08A 0%, #FED7AA 100%); }
+  .illustration[data-cat="family"] { background: linear-gradient(135deg, #FBCFE8 0%, #FED7AA 100%); }
+  .illustration[data-cat="food"] { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
+  .illustration[data-cat="colors"] { background: linear-gradient(135deg, #FECACA 0%, #BFDBFE 100%); }
+  .illustration[data-cat="days"] { background: linear-gradient(135deg, #DDD6FE 0%, #FBCFE8 100%); }
+  .illustration[data-cat="verbs"] { background: linear-gradient(135deg, #A7F3D0 0%, #FDE68A 100%); }
+  .illustration[data-cat="house"] { background: linear-gradient(135deg, #FED7AA 0%, #FEF3C7 100%); }
+  
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px; font-weight: 500;
+    text-align: left; cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 12px;
+    -webkit-appearance: none;
+  }
+  .option-btn:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .option-btn.selected { border-color: var(--ink); background: var(--ink); color: white; }
+  .option-btn.correct { border-color: var(--green); background: var(--green-soft); color: var(--green); }
+  .option-btn.incorrect { border-color: #E63946; background: #FFE0E3; color: #E63946; }
+  .option-num {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+  .option-btn.selected .option-num { background: rgba(255,255,255,0.2); color: white; }
+  .option-btn.correct .option-num { background: var(--green); color: white; }
+  .option-btn.incorrect .option-num { background: #E63946; color: white; }
+  
+  /* SPEAK MODE */
+  .speak-target {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .speak-target-de {
+    font-family: 'Fraunces', serif;
+    font-size: 32px; font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .speak-target-en {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .listen-btn {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+  .listen-btn:hover { background: var(--line); }
+  
+  .mic-control {
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    transition: all 0.3s;
+  }
+  .mic-control.recording {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .mic-btn {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 20px rgba(255, 92, 57, 0.3);
+    margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: auto; margin-right: auto;
+    -webkit-appearance: none;
+  }
+  .mic-btn:hover { transform: scale(1.05); }
+  .mic-btn.recording { 
+    animation: pulse 1.2s infinite;
+    background: #DC2626;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3); }
+    50% { transform: scale(1.08); box-shadow: 0 8px 32px rgba(220, 38, 38, 0.5); }
+  }
+  .mic-status {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    min-height: 18px;
+  }
+  .mic-transcript {
+    margin-top: 10px;
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    min-height: 22px;
+  }
+  .mic-skip {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+    padding: 4px 8px;
+  }
+  
+  /* WRITE INPUT */
+  .write-input {
+    width: 100%;
+    padding: 18px 20px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 600;
+    background: var(--surface);
+    transition: all 0.2s;
+    margin-bottom: 16px;
+    -webkit-appearance: none;
+  }
+  .write-input:focus { outline: none; border-color: var(--ink); }
+  
+  /* BUILD SENTENCE */
+  .build-area {
+    min-height: 70px;
+    background: var(--surface);
+    border: 2px dashed var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex; flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .word-bank { display: flex; flex-wrap: wrap; gap: 8px; }
+  .word-tile {
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .word-tile:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .word-tile.used { opacity: 0; pointer-events: none; }
+  .word-tile.placed { background: var(--ink); color: white; border-color: var(--ink); }
+  
+  .footer-bar {
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    padding: 14px 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    position: sticky; bottom: 0;
+  }
+  .check-btn {
+    background: var(--ink); color: white;
+    border: none; padding: 14px 32px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    margin-left: auto;
+    -webkit-appearance: none;
+  }
+  .check-btn:disabled { background: var(--line); color: var(--ink-faint); cursor: not-allowed; }
+  .check-btn:not(:disabled):hover { background: #2A2420; }
+  
+  .feedback-banner {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    font-size: 14px; font-weight: 500;
+    animation: slideIn 0.3s ease;
+    line-height: 1.4;
+  }
+  @keyframes slideIn {
+    from { transform: translateY(-8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .feedback-banner.correct { background: var(--green-soft); color: var(--green); }
+  .feedback-banner.incorrect { background: #FFE0E3; color: #C62333; }
+  .feedback-banner.partial { background: var(--gold-soft); color: #B45309; }
+  .feedback-banner strong { display: block; font-weight: 700; margin-bottom: 2px; font-size: 15px; }
+  
+  /* SCENARIO SCREEN */
+  .scenario-stage {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 16px;
+  }
+  .scenario-bg {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #FED7AA 0%, #FCD34D 100%);
+    border-radius: 14px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario-character {
+    width: 50%;
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+  }
+  
+  .dialogue-bubble {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    position: relative;
+    max-width: 85%;
+  }
+  .dialogue-bubble.them {
+    background: var(--bg);
+    border-bottom-left-radius: 4px;
+  }
+  .dialogue-bubble.you {
+    background: var(--ink);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+  .dialogue-speaker {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    opacity: 0.7;
+    margin-bottom: 4px;
+  }
+  .dialogue-text {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .dialogue-text em { font-style: italic; }
+  .dialogue-translation {
+    font-size: 12px;
+    opacity: 0.7;
+    line-height: 1.3;
+  }
+  
+  /* COMPLETION */
+  .complete-screen {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 32px 20px;
+  }
+  .complete-icon { font-size: 64px; margin-bottom: 16px; animation: bounce 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes bounce {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  .complete-title {
+    font-family: 'Fraunces', serif;
+    font-size: 36px; font-weight: 800;
+    letter-spacing: -0.03em; margin-bottom: 8px;
+  }
+  .complete-subtitle {
+    font-size: 15px; color: var(--ink-soft);
+    margin-bottom: 28px;
+  }
+  .complete-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%; max-width: 380px;
+    margin-bottom: 24px;
+  }
+  .stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 10px;
+  }
+  .stat-tile-value {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 2px;
+  }
+  .stat-tile-label {
+    font-size: 10px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .stat-tile.streak .stat-tile-value { color: var(--accent); }
+  .stat-tile.xp .stat-tile-value { color: var(--gold); }
+  .stat-tile.accuracy .stat-tile-value { color: var(--green); }
+  
+  .milestone-banner {
+    background: linear-gradient(135deg, #FFF4D6 0%, #FFE8E0 100%);
+    border: 1px solid var(--gold-soft);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+    max-width: 380px; width: 100%;
+  }
+  .milestone-banner .icon { font-size: 26px; }
+  .milestone-banner .text { text-align: left; }
+  .milestone-banner .text strong {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .milestone-banner .text span { font-size: 12px; color: var(--ink-soft); }
+  
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(26, 22, 20, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 420px; width: 100%;
+    text-align: center;
+    animation: modalPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes modalPop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-icon { font-size: 52px; margin-bottom: 14px; }
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 8px;
+  }
+  .modal-text { color: var(--ink-soft); margin-bottom: 22px; line-height: 1.5; font-size: 14px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-btn {
+    flex: 1; padding: 13px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+  .modal-btn.primary { background: var(--ink); color: white; }
+  .modal-btn.primary:hover { background: #2A2420; }
+  .modal-btn.secondary { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+  
+  /* ====================== BRUNO THE MASCOT ====================== */
+  .bruno {
+    display: inline-block;
+    position: relative;
+  }
+  .bruno svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  
+  /* All animated parts use these CSS variables to coordinate */
+  .bruno .b-body { transform-origin: 50% 80%; }
+  .bruno .b-head { transform-origin: 50% 50%; }
+  .bruno .b-eye-l, .bruno .b-eye-r { transform-origin: center; }
+  .bruno .b-mouth { transform-origin: center; }
+  .bruno .b-arm-l { transform-origin: 35% 35%; }
+  .bruno .b-arm-r { transform-origin: 65% 35%; }
+  .bruno .b-leg-l { transform-origin: 42% 75%; }
+  .bruno .b-leg-r { transform-origin: 58% 75%; }
+  .bruno .b-effect { opacity: 0; }
+  
+  /* IDLE — breathing + blinking */
+  .bruno[data-state="idle"] .b-body { animation: bIdleBreathe 3s ease-in-out infinite; }
+  .bruno[data-state="idle"] .b-eye-l, .bruno[data-state="idle"] .b-eye-r {
+    animation: bIdleBlink 4s steps(2, end) infinite;
+  }
+  @keyframes bIdleBreathe {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.04); }
+  }
+  @keyframes bIdleBlink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%, 97% { transform: scaleY(0.1); }
+  }
+  
+  /* CHEER — happy jump with arms up */
+  .bruno[data-state="cheer"] .b-body { animation: bCheerJump 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .bruno[data-state="cheer"] .b-arm-l { animation: bCheerArmL 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .bruno[data-state="cheer"] .b-arm-r { animation: bCheerArmR 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .bruno[data-state="cheer"] .b-mouth { d: path('M 40 60 Q 50 70 60 60'); }
+  .bruno[data-state="cheer"] .b-effect-sparkle { animation: bSparkle 0.8s ease-out; }
+  @keyframes bCheerJump {
+    0% { transform: translateY(0); }
+    40% { transform: translateY(-12px) scaleY(1.05); }
+    70% { transform: translateY(0) scaleY(0.95); }
+    100% { transform: translateY(0) scaleY(1); }
+  }
+  @keyframes bCheerArmL {
+    0% { transform: rotate(0deg); }
+    40% { transform: rotate(-110deg); }
+    100% { transform: rotate(-110deg); }
+  }
+  @keyframes bCheerArmR {
+    0% { transform: rotate(0deg); }
+    40% { transform: rotate(110deg); }
+    100% { transform: rotate(110deg); }
+  }
+  @keyframes bSparkle {
+    0% { opacity: 0; transform: scale(0.4) translateY(0); }
+    50% { opacity: 1; transform: scale(1.2) translateY(-8px); }
+    100% { opacity: 0; transform: scale(0.6) translateY(-16px); }
+  }
+  
+  /* SAD — slumped, mouth flips */
+  .bruno[data-state="sad"] .b-body { animation: bSadSlump 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .bruno[data-state="sad"] .b-mouth { d: path('M 40 65 Q 50 55 60 65'); }
+  .bruno[data-state="sad"] .b-eye-l, .bruno[data-state="sad"] .b-eye-r {
+    animation: bSadEyes 0.4s ease-out forwards;
+  }
+  @keyframes bSadSlump {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px) scaleY(0.95); }
+  }
+  @keyframes bSadEyes {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(0.5); }
+  }
+  
+  /* SPRINT — running */
+  .bruno[data-state="sprint"] .b-leg-l { animation: bSprintLegL 0.4s linear infinite; }
+  .bruno[data-state="sprint"] .b-leg-r { animation: bSprintLegR 0.4s linear infinite; }
+  .bruno[data-state="sprint"] .b-arm-l { animation: bSprintArmL 0.4s linear infinite; }
+  .bruno[data-state="sprint"] .b-arm-r { animation: bSprintArmR 0.4s linear infinite; }
+  .bruno[data-state="sprint"] .b-body { animation: bSprintBob 0.4s linear infinite; }
+  @keyframes bSprintLegL {
+    0%, 100% { transform: rotate(-30deg); }
+    50% { transform: rotate(30deg); }
+  }
+  @keyframes bSprintLegR {
+    0%, 100% { transform: rotate(30deg); }
+    50% { transform: rotate(-30deg); }
+  }
+  @keyframes bSprintArmL {
+    0%, 100% { transform: rotate(40deg); }
+    50% { transform: rotate(-40deg); }
+  }
+  @keyframes bSprintArmR {
+    0%, 100% { transform: rotate(-40deg); }
+    50% { transform: rotate(40deg); }
+  }
+  @keyframes bSprintBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  
+  /* WAVE — friendly hello */
+  .bruno[data-state="wave"] .b-arm-r { animation: bWaveArm 1.2s ease-in-out; }
+  @keyframes bWaveArm {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(-90deg); }
+    35% { transform: rotate(-70deg); }
+    50% { transform: rotate(-90deg); }
+    65% { transform: rotate(-70deg); }
+    80% { transform: rotate(-90deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  /* SLEEP — slumped, Z's floating */
+  .bruno[data-state="sleep"] .b-eye-l, .bruno[data-state="sleep"] .b-eye-r {
+    transform: scaleY(0.1);
+  }
+  .bruno[data-state="sleep"] .b-body { animation: bSleepBreathe 2s ease-in-out infinite; }
+  .bruno[data-state="sleep"] .b-effect-zzz { animation: bZzz 2.4s ease-out infinite; }
+  @keyframes bSleepBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  @keyframes bZzz {
+    0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translate(20px, -30px) scale(1.4); }
+  }
+  
+  /* HOME-SCREEN MASCOT CARD */
+  .bruno-card {
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--surface) 70%);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bruno-card .bruno {
+    width: 72px;
+    height: 84px;
+    flex-shrink: 0;
+  }
+  .bruno-card-text { flex: 1; }
+  .bruno-card-line {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .bruno-card-line em { color: var(--accent); font-style: italic; }
+  .bruno-card-sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.3;
+  }
+  
+  /* FULL-SCREEN MASCOT REACTION (lesson complete, milestones) */
+  .bruno-reaction {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 22, 20, 0.0);
+    backdrop-filter: blur(0px);
+    z-index: 250;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: background 0.3s, backdrop-filter 0.3s;
+  }
+  .bruno-reaction.show {
+    display: flex;
+    background: rgba(26, 22, 20, 0.4);
+    backdrop-filter: blur(6px);
+  }
+  .bruno-reaction .bruno {
+    width: 200px;
+    height: 240px;
+    animation: bReactionPop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes bReactionPop {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  /* PROFILE SETUP / LOGIN SCREEN */
+  .profile-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 380;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    text-align: center;
+    overflow-y: auto;
+  }
+  .profile-screen.active { display: flex; }
+  
+  .profile-bruno {
+    width: 110px;
+    height: 130px;
+    margin-bottom: 16px;
+  }
+  
+  .profile-title {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+  .profile-title em { font-style: italic; color: var(--accent); }
+  
+  .profile-sub {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    max-width: 360px;
+    line-height: 1.5;
+  }
+  
+  .profile-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 22px;
+    max-width: 420px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  .profile-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    background: var(--surface);
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+  .profile-input:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  
+  .profile-label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: left;
+    display: block;
+  }
+  
+  .avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .avatar-option {
+    aspect-ratio: 1;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .avatar-option:hover { border-color: var(--ink-faint); }
+  .avatar-option.active { border-color: var(--ink); background: var(--accent-soft); }
+  
+  .profile-skip {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    padding: 8px;
+  }
+  
+  /* AVATAR PILL IN TOPBAR */
+  .avatar-pill {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .avatar-pill:hover { transform: scale(1.05); }
+  
+  /* ONBOARDING */
+  .onboard {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 400;
+    display: none;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 20px;
+    text-align: center;
+    overflow-y: auto;
+  }
+  .onboard.active { display: flex; }
+  .onboard-emoji { font-size: 64px; margin-bottom: 20px; }
+  .onboard-title {
+    font-family: 'Fraunces', serif;
+    font-size: 36px; font-weight: 800;
+    letter-spacing: -0.03em; margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .onboard-title em { font-style: italic; color: var(--accent); }
+  .onboard-subtitle {
+    font-size: 15px; color: var(--ink-soft);
+    margin-bottom: 28px; max-width: 380px;
+    line-height: 1.5;
+  }
+  .onboard-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 22px;
+    max-width: 420px; width: 100%;
+  }
+  .goal-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .goal-option {
+    padding: 13px 15px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer; text-align: left;
+    transition: all 0.2s;
+    background: var(--surface);
+  }
+  .goal-option:hover { border-color: var(--ink-faint); }
+  .goal-option.active { border-color: var(--ink); background: var(--bg); }
+  .goal-option-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+  .goal-option-meta { font-size: 12px; color: var(--ink-soft); }
+  
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink); color: white;
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-size: 14px; font-weight: 500;
+    z-index: 500;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .daily-headline { font-size: 26px; }
+    .complete-title { font-size: 30px; }
+    .onboard-title { font-size: 30px; }
+    .teach-title { font-size: 26px; }
+    .speak-target-de { font-size: 26px; }
+    .unit-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROFILE SETUP (login screen, comes after onboarding) -->
+<div class="profile-screen" id="profileScreen">
+  <div id="profileBrunoSlot" class="profile-bruno"></div>
+  <h1 class="profile-title">Meet <em>Bruno</em>.</h1>
+  <p class="profile-sub">He'll cheer you on every lesson. Tell him your name so he can greet you properly.</p>
+  
+  <div class="profile-card">
+    <label class="profile-label">Your name</label>
+    <input type="text" class="profile-input" id="profileNameInput" placeholder="What should Bruno call you?" autocomplete="off" maxlength="20" style="margin-bottom: 18px;">
+    
+    <label class="profile-label">Pick an avatar</label>
+    <div class="avatar-grid" id="avatarGrid">
+      <div class="avatar-option active" data-avatar="🧑">🧑</div>
+      <div class="avatar-option" data-avatar="👨">👨</div>
+      <div class="avatar-option" data-avatar="👩">👩</div>
+      <div class="avatar-option" data-avatar="🧔">🧔</div>
+      <div class="avatar-option" data-avatar="👱">👱</div>
+      <div class="avatar-option" data-avatar="🧑‍🎓">🧑‍🎓</div>
+      <div class="avatar-option" data-avatar="🧑‍💼">🧑‍💼</div>
+      <div class="avatar-option" data-avatar="🧑‍🚀">🧑‍🚀</div>
+      <div class="avatar-option" data-avatar="🧑‍🎨">🧑‍🎨</div>
+      <div class="avatar-option" data-avatar="🦊">🦊</div>
+      <div class="avatar-option" data-avatar="🐱">🐱</div>
+      <div class="avatar-option" data-avatar="🐻">🐻</div>
+    </div>
+    
+    <button class="start-btn" onclick="finishProfile()">
+      Let's start <span class="arrow">→</span>
+    </button>
+    <button class="profile-skip" onclick="skipProfile()">Skip — I'll set this up later</button>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboard" id="onboard">
+  <div class="logo-mark logo-boot" style="width: 84px; height: 84px; margin-bottom: 18px;">
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="dsBgBig" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#1A1614"/>
+          <stop offset="100%" stop-color="#2A2420"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="40" height="40" rx="9" fill="url(#dsBgBig)"/>
+      <g class="ds-flag-stripe">
+        <rect x="29" y="5" width="6" height="1.6" rx="0.6" fill="#000000"/>
+        <rect x="29" y="7" width="6" height="1.6" rx="0.6" fill="#dd0000"/>
+        <rect x="29" y="9" width="6" height="1.6" rx="0.6" fill="#FFCE00"/>
+      </g>
+      <rect class="ds-trail" x="6" y="19" width="14" height="2" rx="1" fill="#FF5C39"/>
+      <path d="M 11 11 L 11 29 L 18 29 Q 25 29 25 20 Q 25 11 18 11 Z" fill="#FAF7F2"/>
+      <path d="M 14 14 L 14 26 L 17.5 26 Q 22 26 22 20 Q 22 14 17.5 14 Z" fill="url(#dsBgBig)"/>
+      <path class="ds-chevron" d="M 27 16 L 32 20 L 27 24" stroke="#FF5C39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </div>
+  <h1 class="onboard-title">Deutsch<em>Sprint</em>.<br>Speak from day one.</h1>
+  <p class="onboard-subtitle">A complete A1 course built around speaking out loud — because you'll never order a Bier in Berlin by tapping multiple choice.</p>
+  
+  <div class="onboard-card">
+    <div class="section-label" style="margin-bottom: 12px;">Pick your daily goal</div>
+    <div class="goal-options" id="goalOptions">
+      <div class="goal-option" data-goal="10">
+        <div class="goal-option-name">Casual</div>
+        <div class="goal-option-meta">10 XP · ~3 min</div>
+      </div>
+      <div class="goal-option active" data-goal="20">
+        <div class="goal-option-name">Regular</div>
+        <div class="goal-option-meta">20 XP · ~5 min · most popular</div>
+      </div>
+      <div class="goal-option" data-goal="30">
+        <div class="goal-option-name">Serious</div>
+        <div class="goal-option-meta">30 XP · ~10 min</div>
+      </div>
+      <div class="goal-option" data-goal="50">
+        <div class="goal-option-name">Intense</div>
+        <div class="goal-option-meta">50 XP · ~15 min</div>
+      </div>
+    </div>
+    <button class="start-btn" onclick="finishOnboarding()">
+      Begin <span class="arrow">→</span>
+    </button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">
+      <div class="logo-mark logo-boot">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Rounded square background with subtle gradient -->
+          <defs>
+            <linearGradient id="dsBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1A1614"/>
+              <stop offset="100%" stop-color="#2A2420"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="40" height="40" rx="9" fill="url(#dsBg)"/>
+          
+          <!-- Tiny German flag accent stripe (top-right corner) -->
+          <g class="ds-flag-stripe">
+            <rect x="29" y="5" width="6" height="1.6" rx="0.6" fill="#000000"/>
+            <rect x="29" y="7" width="6" height="1.6" rx="0.6" fill="#dd0000"/>
+            <rect x="29" y="9" width="6" height="1.6" rx="0.6" fill="#FFCE00"/>
+          </g>
+          
+          <!-- Sprint trail line (the motion behind the D) -->
+          <rect class="ds-trail" x="6" y="19" width="14" height="2" rx="1" fill="#FF5C39"/>
+          
+          <!-- Bold "D" letterform — geometric, modern -->
+          <path d="M 11 11 L 11 29 L 18 29 Q 25 29 25 20 Q 25 11 18 11 Z" 
+                fill="#FAF7F2" stroke="none"/>
+          <!-- Inner cutout to make it a D -->
+          <path d="M 14 14 L 14 26 L 17.5 26 Q 22 26 22 20 Q 22 14 17.5 14 Z" 
+                fill="url(#dsBg)"/>
+          
+          <!-- Forward chevron — the "sprint" arrow -->
+          <path class="ds-chevron" d="M 27 16 L 32 20 L 27 24" 
+                stroke="#FF5C39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-name">Deutsch<span class="accent">Sprint</span></div>
+        <div class="logo-tag">agprods</div>
+      </div>
+    </div>
+    <div class="topbar-stats">
+      <div class="pill pill-streak" id="streakPill">
+        <span>🔥</span><span id="streakNum">0</span>
+      </div>
+      <div class="pill pill-hearts">
+        <span>♥</span><span id="heartsNum">5</span>
+      </div>
+      <div class="pill" style="color: var(--gold);">
+        <span>⚡</span><span id="xpNum">0</span>
+      </div>
+      <div class="avatar-pill" id="avatarPill" onclick="openProfile()" title="Edit profile">🧑</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="wrap" id="mainView">
+  
+  <!-- HERO -->
+  <div class="daily-card">
+    <div class="daily-greet" id="greeting">Guten Tag</div>
+    <h1 class="daily-headline" id="headline">Ready for today's<br><em>lesson?</em></h1>
+    
+    <div class="daily-progress-track">
+      <div class="daily-progress-fill" id="dailyFill" style="width: 0%"></div>
+    </div>
+    <div class="daily-progress-meta">
+      <span><strong id="todayXP">0</strong> / <span id="dailyGoal">20</span> XP today</span>
+      <span id="goalStatus">Let's begin</span>
+    </div>
+    
+    <button class="start-btn" onclick="continueLesson()">
+      <span id="startBtnText">Continue your path</span>
+      <span class="arrow">→</span>
+    </button>
+  </div>
+  
+  <!-- BRUNO MASCOT -->
+  <div class="bruno-card" id="brunoCard"></div>
+  
+  <!-- WEAK WORDS / SRS -->
+  <div class="review-card" id="reviewCard" style="display: none;">
+    <div class="review-header">
+      <div class="review-title">
+        <span class="review-title-icon">🎯</span>
+        Words to review
+      </div>
+      <button class="review-cta" onclick="startReview()">Drill 5 →</button>
+    </div>
+    <div class="review-words" id="reviewWords"></div>
+  </div>
+  
+  <!-- SCENARIO -->
+  <div class="scenario-card" id="scenarioCard" style="display: none;">
+    <div class="scenario-header">
+      <div class="scenario-tag" id="scenarioTag">Scenario unlocked</div>
+    </div>
+    <div class="scenario-title" id="scenarioTitle">At the Berliner Café</div>
+    <div class="scenario-subtitle" id="scenarioSubtitle">Order a coffee like a local. 90 seconds.</div>
+    <div class="scenario-preview">
+      <div class="scenario-preview-icon">☕</div>
+      <div>
+        <div style="font-weight: 600; margin-bottom: 2px;" id="scenarioPreviewName">Café im Volkspark</div>
+        <div style="color: var(--ink-soft); font-size: 12px;" id="scenarioPreviewDesc">Practice ordering with a real dialogue</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 3D LEVEL CAPSTONES -->
+  <div id="scene3dSection" style="display:none; margin-top: 8px;">
+    <div class="section-label">Level capstones</div>
+    <h2 class="section-title">
+      <span>3D Scenarios</span>
+      <span style="font-size: 11px; font-weight: 600; color: var(--ink-soft); padding: 4px 10px; border: 1px solid var(--line); border-radius: 100px;">After every level</span>
+    </h2>
+    <div id="scene3dContainer"></div>
+  </div>
+  
+  <!-- WEEK STREAK -->
+  <div class="streak-card">
+    <div class="section-label">This week</div>
+    <h2 class="section-title">
+      <span><span id="weekStreakNum">0</span>-week streak</span>
+      <button onclick="openSettings()" style="background: none; border: 1px solid var(--line); color: var(--ink-soft); cursor: pointer; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 100px;">Goal: <span id="goalDisplay">20</span> XP</button>
+    </h2>
+    <div class="week-grid" id="weekGrid"></div>
+    <div class="floor-info">
+      <div><strong>Weekly floor: <span id="floorMet">0</span> of 5 days hit</strong></div>
+      <div style="margin-top: 4px;">Hit your goal 5 days a week to keep your streak. Miss a day? No problem — that's why you have 2 buffer days.</div>
+      <div class="floor-progress">
+        <div class="floor-progress-fill" id="floorFill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CURRICULUM -->
+  <div id="curriculum"></div>
+</div>
+
+<!-- LESSON SCREEN -->
+<div class="lesson-screen" id="lessonScreen">
+  <div class="lesson-header">
+    <button class="close-btn" onclick="quitLesson()">✕</button>
+    <div class="lesson-progress-top">
+      <div class="lesson-progress-top-fill" id="lessonProgress" style="width: 0%"></div>
+    </div>
+    <div class="hearts-display">
+      <span>♥</span><span id="lessonHearts">5</span>
+    </div>
+  </div>
+  <div class="lesson-body" id="lessonBody"></div>
+  <div class="footer-bar" id="footerBar" style="display: none;">
+    <button class="check-btn" id="checkBtn" onclick="checkAnswer()" disabled>Check</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ====================================================================
+// PART 1: ASSET MANIFEST (dual-source: local Kenney → SVG fallback)
+// ====================================================================
+//
+// HOW IT WORKS:
+// 1. Every word in the curriculum has an entry in WORD_ASSETS below.
+// 2. Each entry has BOTH a local path (where Kenney pack file would go)
+//    AND an inline SVG fallback that always works.
+// 3. resolveAsset() tries local first, falls back to SVG immediately.
+// 4. To upgrade: download Kenney packs to /assets/, no code changes needed.
+//
+// KENNEY PACK MAPPINGS (for when you download them):
+//   Food Kit       → /assets/objects/food/
+//   Animal Pack    → /assets/objects/animals/
+//   Furniture Kit  → /assets/objects/furniture/
+//   Car Kit        → /assets/objects/transport/
+//   Toon Chars     → /assets/characters/
+//   Nature Kit     → /assets/objects/nature/
+//   UI Pack        → /assets/ui/
+//
+// ====================================================================
+
+// --- INLINE SVG ART (guaranteed to load, always work) ---
+const SVG = {
+  // Generic circle-with-emoji fallback
+  emoji: (emoji, bg = '#FFE8E0') => `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="90" fill="${bg}"/>
+      <text x="100" y="140" font-size="120" text-anchor="middle">${emoji}</text>
+    </svg>`)}`,
+  
+  // Letter card
+  letter: (letter, color = '#FF5C39') => `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <rect x="20" y="20" width="160" height="160" rx="24" fill="${color}"/>
+      <text x="100" y="138" font-size="120" font-family="Georgia,serif" font-weight="900" text-anchor="middle" fill="white">${letter}</text>
+    </svg>`)}`,
+  
+  // Number card
+  number: (n, color = '#3D5AFE') => `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="80" fill="${color}"/>
+      <text x="100" y="135" font-size="100" font-family="Georgia,serif" font-weight="900" text-anchor="middle" fill="white">${n}</text>
+    </svg>`)}`,
+  
+  // Color swatch
+  colorSwatch: (color, label) => `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <rect x="20" y="20" width="160" height="160" rx="24" fill="${color}" stroke="#1A1614" stroke-width="3"/>
+      <text x="100" y="115" font-size="22" font-family="Georgia,serif" font-weight="700" text-anchor="middle" fill="${color === '#FFFFFF' || color === '#FEF08A' ? '#1A1614' : 'white'}">${label || ''}</text>
+    </svg>`)}`,
+  
+  // Calendar day
+  day: (n) => `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <rect x="25" y="35" width="150" height="140" rx="12" fill="white" stroke="#1A1614" stroke-width="3"/>
+      <rect x="25" y="35" width="150" height="38" rx="12" fill="#FF5C39"/>
+      <text x="100" y="62" font-size="20" font-family="Inter,sans-serif" font-weight="700" text-anchor="middle" fill="white">${n}</text>
+      <circle cx="60" cy="25" r="8" fill="#1A1614"/>
+      <circle cx="140" cy="25" r="8" fill="#1A1614"/>
+    </svg>`)}`
+};
+
+// --- WORD-TO-ASSET MAP ---
+// For each word: { local: 'path/to/kenney/file.png', fallback: SVG }
+// resolveAsset() tries local first, returns fallback if local fails
+
+const WORD_ASSETS = {
+  // FOOD (Kenney Food Kit)
+  'das Brot':       { local: '/assets/objects/food/bread.png',     fallback: SVG.emoji('🍞', '#FEF3C7') },
+  'der Käse':       { local: '/assets/objects/food/cheese.png',    fallback: SVG.emoji('🧀', '#FEF3C7') },
+  'das Bier':       { local: '/assets/objects/food/beer.png',      fallback: SVG.emoji('🍺', '#FEF08A') },
+  'die Wurst':      { local: '/assets/objects/food/sausage.png',   fallback: SVG.emoji('🌭', '#FED7AA') },
+  'der Apfel':      { local: '/assets/objects/food/apple.png',     fallback: SVG.emoji('🍎', '#FECACA') },
+  'der Kaffee':     { local: '/assets/objects/food/coffee.png',    fallback: SVG.emoji('☕', '#FED7AA') },
+  'die Kartoffel':  { local: '/assets/objects/food/potato.png',    fallback: SVG.emoji('🥔', '#FEF3C7') },
+  'das Wasser':     { local: '/assets/objects/food/water.png',     fallback: SVG.emoji('💧', '#BAE6FD') },
+  'die Milch':      { local: '/assets/objects/food/milk.png',      fallback: SVG.emoji('🥛', '#F1F5F9') },
+  
+  // ANIMALS (Kenney Animal Pack Redux)
+  'der Hund':       { local: '/assets/objects/animals/dog.png',    fallback: SVG.emoji('🐕', '#FED7AA') },
+  'die Katze':      { local: '/assets/objects/animals/cat.png',    fallback: SVG.emoji('🐈', '#FEF3C7') },
+  
+  // NATURE (Kenney Nature Kit)
+  'der Baum':       { local: '/assets/objects/nature/tree.png',    fallback: SVG.emoji('🌳', '#BBF7D0') },
+  'die Blume':      { local: '/assets/objects/nature/flower.png',  fallback: SVG.emoji('🌸', '#FBCFE8') },
+  'der Berg':       { local: '/assets/objects/nature/mountain.png',fallback: SVG.emoji('⛰️', '#E0E7FF') },
+  'das Meer':       { local: '/assets/objects/nature/sea.png',     fallback: SVG.emoji('🌊', '#BAE6FD') },
+  
+  // FAMILY (emoji fallback only — no Kenney equivalent)
+  'die Mutter':     { local: null, fallback: SVG.emoji('👩', '#FBCFE8') },
+  'der Vater':      { local: null, fallback: SVG.emoji('👨', '#BAE6FD') },
+  'die Schwester':  { local: null, fallback: SVG.emoji('👧', '#FBCFE8') },
+  'der Bruder':     { local: null, fallback: SVG.emoji('👦', '#BAE6FD') },
+  'die Oma':        { local: null, fallback: SVG.emoji('👵', '#FCE7F3') },
+  'der Opa':        { local: null, fallback: SVG.emoji('👴', '#E0E7FF') },
+  'das Kind':       { local: null, fallback: SVG.emoji('🧒', '#FEF3C7') },
+  
+  // FURNITURE / HOUSE (Kenney Furniture Kit)
+  'das Haus':       { local: '/assets/worlds/home/house.png',      fallback: SVG.emoji('🏠', '#FED7AA') },
+  'das Bett':       { local: '/assets/objects/furniture/bed.png',  fallback: SVG.emoji('🛏️', '#FBCFE8') },
+  'der Stuhl':      { local: '/assets/objects/furniture/chair.png',fallback: SVG.emoji('🪑', '#FEF3C7') },
+  'der Tisch':      { local: '/assets/objects/furniture/table.png',fallback: SVG.emoji('🪟', '#FED7AA') },
+  'die Tür':        { local: '/assets/objects/furniture/door.png', fallback: SVG.emoji('🚪', '#FED7AA') },
+  'das Fenster':    { local: '/assets/objects/furniture/window.png',fallback: SVG.emoji('🪟', '#BAE6FD') },
+  'die Lampe':      { local: '/assets/objects/furniture/lamp.png', fallback: SVG.emoji('💡', '#FEF08A') },
+  'die Küche':      { local: null, fallback: SVG.emoji('🍳', '#FED7AA') },
+  'die Wohnung':    { local: null, fallback: SVG.emoji('🏢', '#E0E7FF') },
+  'das Zimmer':     { local: null, fallback: SVG.emoji('🚪', '#FEF3C7') }
+};
+
+// --- LETTERS, NUMBERS, COLORS ---
+const LETTER_ASSET = (letter) => SVG.letter(letter);
+const NUMBER_ASSET = (n) => SVG.number(n);
+const COLOR_ASSETS = {
+  'rot':     SVG.colorSwatch('#DC2626', 'rot'),
+  'blau':    SVG.colorSwatch('#3B82F6', 'blau'),
+  'grün':    SVG.colorSwatch('#16A34A', 'grün'),
+  'gelb':    SVG.colorSwatch('#FEF08A', 'gelb'),
+  'schwarz': SVG.colorSwatch('#1A1614', 'schwarz'),
+  'weiß':    SVG.colorSwatch('#FFFFFF', 'weiß'),
+  'grau':    SVG.colorSwatch('#9CA3AF', 'grau')
+};
+
+// --- ASSET RESOLVER ---
+// Returns a URL that's GUARANTEED to load. Tries local first, falls back instantly.
+function resolveAsset(word, opts = {}) {
+  // Special types
+  if (opts.type === 'letter') return LETTER_ASSET(word);
+  if (opts.type === 'number') return NUMBER_ASSET(word);
+  if (opts.type === 'color' && COLOR_ASSETS[word]) return COLOR_ASSETS[word];
+  if (opts.type === 'day') return SVG.day(word);
+  if (opts.emoji) return SVG.emoji(opts.emoji, opts.bg);
+  
+  // Word-based
+  const entry = WORD_ASSETS[word];
+  if (!entry) return SVG.emoji('📚', '#FEF3C7'); // generic fallback
+  
+  // Return fallback SVG immediately. The img onerror handler in renderImage()
+  // is what tries the local path first; this just ensures we never have a broken image.
+  return entry.fallback;
+}
+
+// renderImage produces an <img> that tries Kenney local path first, falls back to SVG.
+// This is the bulletproof pattern: if /assets/ doesn't exist, onerror swaps in the SVG.
+function renderImage(word, opts = {}) {
+  const entry = WORD_ASSETS[word];
+  const fallback = resolveAsset(word, opts);
+  
+  // If we have a local path, try that first; onerror swaps in fallback
+  if (entry && entry.local) {
+    const safeFallback = fallback.replace(/"/g, '&quot;');
+    return `<img class="svg-art" src="${entry.local}" onerror="this.onerror=null;this.src='${safeFallback}'" alt="${word}">`;
+  }
+  
+  // No local path — go straight to fallback
+  return `<img class="svg-art" src="${fallback}" alt="${word}">`;
+}
+
+// ====================================================================
+// PART 2: A1 CURRICULUM
+// ====================================================================
+
+const curriculum = [
+  {
+    id: 'foundations',
+    code: 'A1.1',
+    name: 'Foundations',
+    tag: 'The very basics',
+    units: [
+      {
+        id: 'alphabet',
+        cat: 'alphabet',
+        emoji: '🔤',
+        name: 'The German Alphabet',
+        meta: '6 min',
+        teach: [{
+          tag: 'Lesson 1',
+          title: 'The German <em>alphabet</em>',
+          subtitle: "26 letters like English, plus four special characters: ä, ö, ü, ß.",
+          blocks: [
+            { de: 'A B C D E', en: 'ah – beh – tseh – deh – eh', note: "Notice 'C' sounds like 'tseh' in German." },
+            { de: 'Ä Ö Ü', en: 'Umlauts — modified vowels', note: "Ä = 'eh'. Ö = like 'i' in 'bird'. Ü = pucker your lips and say 'ee'." },
+            { de: 'ß', en: "Eszett — pronounced like 'ss'", note: "Used after long vowels: Straße (street), heißen (to be called)." }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { type: 'letter', word: 'Ä' }, prompt: 'Which letter is the umlaut "ä"?', answer: 'Ä', options: ['Ä', 'Ö', 'Ü', 'ß'], why: { title: 'About umlauts', text: 'Umlauts are vowels with a sound shift, marked with two dots. They\'re separate letters in German, not just decorations.' } },
+          { type: 'choice', img: { type: 'letter', word: 'ß' }, prompt: 'How is "ß" pronounced?', answer: 'like ss', options: ['like ss', 'like b', 'like z', 'like sh'], why: { title: 'The "Eszett"', text: 'ß is a ligature of two old letters. It\'s always lowercase and only appears mid- or end-of-word, never at the start.' } },
+          { type: 'choice', img: { type: 'letter', word: 'Ü' }, prompt: 'Which sound does "ü" make?', answer: 'lips rounded "ee"', options: ['lips rounded "ee"', 'like English "u"', 'like English "oo"', 'silent'] },
+          { type: 'choice', img: { type: 'letter', word: 'D' }, prompt: 'How many extra letters does German have beyond English?', answer: '4', options: ['2', '3', '4', '5'] }
+        ]
+      },
+      {
+        id: 'greetings',
+        cat: 'greetings',
+        emoji: '👋',
+        name: 'Greetings & Goodbyes',
+        meta: '5 min',
+        teach: [{
+          tag: 'Lesson 2',
+          title: 'Say <em>hello</em> in German',
+          subtitle: "Germans use different greetings depending on time and formality.",
+          blocks: [
+            { de: 'Hallo', en: 'Hello (informal, anytime)', note: 'The most common casual greeting.' },
+            { de: 'Guten Morgen', en: 'Good morning', note: 'Used until about 10 or 11 AM.' },
+            { de: 'Guten Tag', en: 'Good day', note: 'The standard formal greeting during the day.' },
+            { de: 'Guten Abend', en: 'Good evening', note: 'After about 6 PM.' },
+            { de: 'Tschüss', en: 'Bye (informal)', note: 'Casual goodbye between friends.' },
+            { de: 'Auf Wiedersehen', en: 'Goodbye (formal)', note: "Literally: 'until we see each other again'." }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '🌅', bg: '#FED7AA' }, prompt: 'How do you say "Good morning"?', answer: 'Guten Morgen', options: ['Guten Morgen', 'Guten Abend', 'Hallo', 'Tschüss'] },
+          { type: 'choice', img: { emoji: '👋', bg: '#FEF08A' }, prompt: 'What does "Tschüss" mean?', answer: 'Bye (informal)', options: ['Bye (informal)', 'Hello', 'Good night', 'Thank you'] },
+          { type: 'choice', img: { emoji: '🌆', bg: '#DDD6FE' }, prompt: 'You meet someone at 8 PM. What do you say?', answer: 'Guten Abend', options: ['Guten Abend', 'Guten Morgen', 'Auf Wiedersehen', 'Hallo'] },
+          { type: 'speak', target: 'Guten Tag', en: 'Good day', img: { emoji: '🤝', bg: '#FEF3C7' } },
+          { type: 'choice', img: { emoji: '👔', bg: '#E0E7FF' }, prompt: 'In a formal setting, how do you say goodbye?', answer: 'Auf Wiedersehen', options: ['Auf Wiedersehen', 'Tschüss', 'Hallo', 'Bitte'] }
+        ]
+      },
+      {
+        id: 'courtesy',
+        cat: 'greetings',
+        emoji: '🙏',
+        name: 'Please & Thank You',
+        meta: '4 min',
+        teach: [{
+          tag: 'Lesson 3',
+          title: '<em>Bitte</em> & <em>Danke</em>',
+          subtitle: "Bitte is famously multi-purpose — please, you're welcome, here you go.",
+          blocks: [
+            { de: 'Danke', en: 'Thank you' },
+            { de: 'Danke schön / Vielen Dank', en: 'Thank you very much' },
+            { de: 'Bitte', en: "Please / You're welcome / Here you go", note: "One word, three meanings — context tells you which." },
+            { de: 'Entschuldigung', en: 'Excuse me / Sorry' },
+            { de: 'Ja / Nein', en: 'Yes / No' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '🙏', bg: '#FEF3C7' }, prompt: 'How do you say "Thank you"?', answer: 'Danke', options: ['Danke', 'Bitte', 'Hallo', 'Tschüss'] },
+          { type: 'choice', img: { emoji: '💬', bg: '#FBCFE8' }, prompt: 'Someone says "Danke." You reply with...', answer: 'Bitte', options: ['Bitte', 'Danke', 'Ja', 'Nein'] },
+          { type: 'speak', target: 'Entschuldigung', en: 'Excuse me / Sorry', img: { emoji: '😅', bg: '#FED7AA' } },
+          { type: 'choice', img: { emoji: '✨', bg: '#FFF4D6' }, prompt: 'How do you say "Thank you very much"?', answer: 'Vielen Dank', options: ['Vielen Dank', 'Bitte schön', 'Guten Tag', 'Auf Wiedersehen'] }
+        ]
+      },
+      {
+        id: 'numbers1',
+        cat: 'numbers',
+        emoji: '🔢',
+        name: 'Numbers 1–10',
+        meta: '5 min',
+        teach: [{
+          tag: 'Lesson 4',
+          title: 'Count to <em>zehn</em>',
+          subtitle: "Numbers in German follow patterns you'll recognize from English.",
+          blocks: [
+            { de: 'eins · zwei · drei', en: 'one · two · three' },
+            { de: 'vier · fünf · sechs', en: 'four · five · six' },
+            { de: 'sieben · acht', en: 'seven · eight' },
+            { de: 'neun · zehn', en: 'nine · ten', note: "'zehn' is pronounced 'tsayn'." }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { type: 'number', word: '1' }, prompt: 'What is "eins"?', answer: '1', options: ['1', '2', '3', '4'] },
+          { type: 'choice', img: { type: 'number', word: '5' }, prompt: 'How do you say "five"?', answer: 'fünf', options: ['fünf', 'vier', 'sechs', 'sieben'] },
+          { type: 'choice', img: { type: 'number', word: '10' }, prompt: 'What is "zehn"?', answer: '10', options: ['10', '9', '8', '7'] },
+          { type: 'speak', target: 'sieben', en: 'seven', img: { type: 'number', word: '7' } },
+          { type: 'choice', img: { type: 'number', word: '6' }, prompt: 'Drei + drei = ?', answer: 'sechs', options: ['sechs', 'sieben', 'fünf', 'vier'] }
+        ]
+      },
+      {
+        id: 'pronouns',
+        cat: 'pronouns',
+        emoji: '🧑',
+        name: 'Personal Pronouns',
+        meta: '6 min',
+        teach: [{
+          tag: 'Lesson 5',
+          title: 'Who is <em>doing</em> what?',
+          subtitle: "German has formal AND informal 'you' — pay attention.",
+          table: {
+            headers: ['German', 'English'],
+            rows: [
+              ['ich', 'I'],
+              ['du', 'you (informal, one)'],
+              ['er', 'he'],
+              ['sie', 'she'],
+              ['es', 'it'],
+              ['wir', 'we'],
+              ['ihr', 'you (informal, plural)'],
+              ['sie', 'they'],
+              ['Sie', 'you (formal, capital S)']
+            ]
+          },
+          blocks: [
+            { de: 'du vs. Sie', en: 'Informal vs. formal "you"', note: '"du" is for friends, family, kids. "Sie" (always capitalized) is for strangers, elders, work.' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '🧍', bg: '#E0E7FF' }, prompt: 'How do you say "I"?', answer: 'ich', options: ['ich', 'du', 'er', 'wir'] },
+          { type: 'choice', img: { emoji: '👨', bg: '#BAE6FD' }, prompt: 'Which means "he"?', answer: 'er', options: ['er', 'sie', 'es', 'ihr'] },
+          { type: 'choice', img: { emoji: '👨‍💼', bg: '#FED7AA' }, prompt: "Talking to your boss, you use:", answer: 'Sie', options: ['Sie', 'du', 'ihr', 'wir'], why: { title: 'du vs. Sie', text: 'Sie (formal) shows respect to elders, strangers, professionals. du (informal) is for friends, family, kids. Using du with a stranger can be rude.' } },
+          { type: 'choice', img: { emoji: '👯', bg: '#FBCFE8' }, prompt: '"We" in German is...', answer: 'wir', options: ['wir', 'ihr', 'sie', 'es'] },
+          { type: 'choice', img: { emoji: '👶', bg: '#FEF3C7' }, prompt: 'Talking to a child:', answer: 'du', options: ['du', 'Sie', 'ihr', 'er'] }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'first-sentences',
+    code: 'A1.2',
+    name: 'First Sentences',
+    tag: 'Verbs & articles',
+    units: [
+      {
+        id: 'sein',
+        cat: 'sein',
+        emoji: '🟰',
+        name: 'The verb "to be" (sein)',
+        meta: '7 min',
+        teach: [{
+          tag: 'Lesson 6',
+          title: 'The most important verb: <em>sein</em>',
+          subtitle: "'To be' is irregular. Memorize this and you unlock hundreds of sentences.",
+          table: {
+            headers: ['Pronoun', 'Form', 'Meaning'],
+            rows: [
+              ['ich', 'bin', 'I am'],
+              ['du', 'bist', 'you are'],
+              ['er/sie/es', 'ist', 'he/she/it is'],
+              ['wir', 'sind', 'we are'],
+              ['ihr', 'seid', 'you all are'],
+              ['sie/Sie', 'sind', 'they are / you (formal)']
+            ]
+          },
+          blocks: [
+            { de: 'Ich bin müde.', en: 'I am tired.' },
+            { de: 'Du bist nett.', en: 'You are nice.' },
+            { de: 'Sie ist Lehrerin.', en: 'She is a teacher.', note: "No 'a' before professions in German!" }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '🧍', bg: '#BBF7D0' }, prompt: 'Ich ___ Anna. (I am Anna.)', answer: 'bin', options: ['bin', 'bist', 'ist', 'sind'], why: { title: 'sein conjugation', text: 'Each pronoun gets a different form of sein. Just like English I am / you are / he is, German has ich bin / du bist / er ist.' } },
+          { type: 'choice', img: { emoji: '👯', bg: '#BAE6FD' }, prompt: 'Wir ___ glücklich. (We are happy.)', answer: 'sind', options: ['sind', 'bin', 'ist', 'seid'] },
+          { type: 'choice', img: { emoji: '👨‍🏫', bg: '#FEF08A' }, prompt: 'Er ___ Lehrer.', answer: 'ist', options: ['ist', 'bin', 'bist', 'sind'] },
+          { type: 'build', img: { emoji: '🎓', bg: '#FED7AA' }, prompt: 'Build: "I am a student"', answer: 'Ich bin Student', words: ['Ich', 'bin', 'Student', 'ist', 'sind'] },
+          { type: 'speak', target: 'Ich bin müde', en: 'I am tired', img: { emoji: '😴', bg: '#E0E7FF' } }
+        ]
+      },
+      {
+        id: 'haben',
+        cat: 'haben',
+        emoji: '🤲',
+        name: 'The verb "to have" (haben)',
+        meta: '6 min',
+        teach: [{
+          tag: 'Lesson 7',
+          title: 'Possess things with <em>haben</em>',
+          subtitle: "'To have' lets you say what you own, what age you are, and so much more.",
+          table: {
+            headers: ['Pronoun', 'Form', 'Meaning'],
+            rows: [
+              ['ich', 'habe', 'I have'],
+              ['du', 'hast', 'you have'],
+              ['er/sie/es', 'hat', 'he/she/it has'],
+              ['wir', 'haben', 'we have'],
+              ['ihr', 'habt', 'you all have'],
+              ['sie/Sie', 'haben', 'they have']
+            ]
+          },
+          blocks: [
+            { de: 'Ich habe einen Hund.', en: 'I have a dog.' },
+            { de: 'Du hast Glück!', en: 'You are lucky!', note: "Literally: 'You have luck'." },
+            { de: 'Wie alt bist du?', en: 'How old are you?', note: 'In German, age uses sein, not haben: "Ich bin 25."' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', word: 'der Hund', prompt: 'Ich ___ einen Hund.', answer: 'habe', options: ['habe', 'hast', 'hat', 'haben'] },
+          { type: 'choice', img: { emoji: '🍀', bg: '#BBF7D0' }, prompt: 'Du ___ Glück!', answer: 'hast', options: ['hast', 'habe', 'hat', 'habt'] },
+          { type: 'choice', img: { emoji: '👨‍👩‍👧', bg: '#FBCFE8' }, prompt: 'Sie ___ drei Kinder.', answer: 'hat', options: ['hat', 'haben', 'habe', 'hast'] },
+          { type: 'build', word: 'die Katze', prompt: 'Build: "We have a cat"', answer: 'Wir haben eine Katze', words: ['Wir', 'haben', 'eine', 'Katze', 'hat', 'einen'], why: { title: 'eine vs einen', text: 'Both mean "a/an" — feminine. But Katze is feminine (die), so we use eine in any case here. Don\'t worry about cases yet, we cover them later.' } },
+          { type: 'speak', target: 'Ich habe einen Hund', en: 'I have a dog', word: 'der Hund' }
+        ]
+      },
+      {
+        id: 'articles',
+        cat: 'articles',
+        emoji: '🏷️',
+        name: 'Der, Die, Das',
+        meta: '8 min',
+        teach: [{
+          tag: 'Lesson 8',
+          title: 'Three ways to say <em>"the"</em>',
+          subtitle: "Every German noun has a gender. Yes, even tables. Don't fight it — embrace it.",
+          table: {
+            headers: ['Article', 'Gender', 'Example'],
+            rows: [
+              ['der', 'masculine', 'der Mann'],
+              ['die', 'feminine', 'die Frau'],
+              ['das', 'neuter', 'das Kind'],
+              ['die', 'plural', 'die Männer']
+            ]
+          },
+          blocks: [
+            { de: 'der Tisch', en: 'the table (masculine)' },
+            { de: 'die Lampe', en: 'the lamp (feminine)' },
+            { de: 'das Buch', en: 'the book (neuter)' },
+            { de: 'Tip', en: '', note: "Always learn nouns WITH their article. 'Tisch' alone is incomplete — say 'der Tisch'." }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '👨', bg: '#BAE6FD' }, prompt: 'Which article goes with "Mann"?', answer: 'der', options: ['der', 'die', 'das', 'den'], why: { title: 'Why "der"?', text: 'Mann is grammatically masculine, so it takes der. There aren\'t reliable rules for noun gender — you have to memorize each noun with its article.' } },
+          { type: 'choice', img: { emoji: '👩', bg: '#FBCFE8' }, prompt: '___ Frau ist nett.', answer: 'Die', options: ['Die', 'Der', 'Das', 'Den'] },
+          { type: 'choice', word: 'das Kind', prompt: '___ Kind spielt.', answer: 'Das', options: ['Das', 'Der', 'Die', 'Den'] },
+          { type: 'choice', img: { emoji: '📚', bg: '#FEF08A' }, prompt: '"das Buch" means...', answer: 'the book', options: ['the book', 'a book', 'books', 'my book'] },
+          { type: 'choice', word: 'der Stuhl', prompt: 'Article for "Stuhl"?', answer: 'der', options: ['der', 'die', 'das', 'den'] }
+        ]
+      },
+      {
+        id: 'questions',
+        cat: 'verbs',
+        emoji: '❓',
+        name: 'Asking Questions',
+        meta: '6 min',
+        teach: [{
+          tag: 'Lesson 9',
+          title: 'The <em>W-questions</em>',
+          subtitle: 'Most German question words start with W. They go at the very beginning of the sentence.',
+          table: {
+            headers: ['German', 'English'],
+            rows: [
+              ['Wer?', 'Who?'],
+              ['Was?', 'What?'],
+              ['Wo?', 'Where?'],
+              ['Wann?', 'When?'],
+              ['Wie?', 'How?'],
+              ['Warum?', 'Why?']
+            ]
+          },
+          blocks: [
+            { de: 'Wie heißt du?', en: "What's your name?", note: "Literally 'How are you called?'" },
+            { de: 'Woher kommst du?', en: 'Where are you from?' },
+            { de: 'Wo wohnst du?', en: 'Where do you live?' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '❓', bg: '#FECACA' }, prompt: '"Wer?" means...', answer: 'Who?', options: ['Who?', 'What?', 'Where?', 'When?'] },
+          { type: 'choice', img: { emoji: '📍', bg: '#FED7AA' }, prompt: 'How do you ask "Where?"', answer: 'Wo?', options: ['Wo?', 'Was?', 'Wann?', 'Wie?'] },
+          { type: 'choice', img: { emoji: '⏰', bg: '#FEF08A' }, prompt: '"Wann kommst du?" means...', answer: 'When are you coming?', options: ['When are you coming?', 'How are you coming?', 'Why are you coming?', 'Where are you coming?'] },
+          { type: 'build', img: { emoji: '🗣️', bg: '#FBCFE8' }, prompt: 'Build: "What is your name?"', answer: 'Wie heißt du', words: ['Wie', 'heißt', 'du', 'bist', 'Was'], why: { title: 'Why "Wie"?', text: 'In German, asking someone\'s name uses Wie (how) not Was (what). Literally: "How are you called?" — Wie heißt du?' } },
+          { type: 'speak', target: 'Wie heißt du', en: 'What\'s your name?', img: { emoji: '🗣️', bg: '#FBCFE8' } }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'everyday',
+    code: 'A1.3',
+    name: 'Everyday Life',
+    tag: 'Build vocabulary',
+    units: [
+      {
+        id: 'family',
+        cat: 'family',
+        emoji: '👨‍👩‍👧',
+        name: 'Family Members',
+        meta: '5 min',
+        teach: [{
+          tag: 'Lesson 10',
+          title: 'Meet die <em>Familie</em>',
+          subtitle: "Family vocabulary is essential. Most words follow predictable gender patterns: males = der, females = die.",
+          blocks: [
+            { de: 'die Mutter', en: 'mother', note: 'Casual: "die Mama"' },
+            { de: 'der Vater', en: 'father', note: 'Casual: "der Papa"' },
+            { de: 'die Schwester', en: 'sister' },
+            { de: 'der Bruder', en: 'brother' },
+            { de: 'die Großmutter / Oma', en: 'grandmother' },
+            { de: 'der Großvater / Opa', en: 'grandfather' },
+            { de: 'das Kind', en: 'the child', note: 'Neuter — children are "das" regardless of sex.' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', word: 'die Mutter', prompt: 'How do you say "mother"?', answer: 'die Mutter', options: ['die Mutter', 'der Vater', 'die Schwester', 'die Oma'] },
+          { type: 'choice', word: 'der Bruder', prompt: '"der Bruder" means...', answer: 'brother', options: ['brother', 'father', 'son', 'uncle'] },
+          { type: 'choice', word: 'die Oma', prompt: 'How do you casually say "grandma"?', answer: 'Oma', options: ['Oma', 'Opa', 'Mama', 'Tante'] },
+          { type: 'choice', word: 'das Kind', prompt: 'Article for "Kind"?', answer: 'das', options: ['das', 'der', 'die', 'den'], why: { title: 'Why "das"?', text: 'In German, "Kind" (child) is neuter regardless of whether it\'s a boy or girl. The grammatical gender doesn\'t always match biological sex.' } },
+          { type: 'speak', target: 'die Familie', en: 'family', img: { emoji: '👨‍👩‍👧', bg: '#FBCFE8' } }
+        ]
+      },
+      {
+        id: 'food',
+        cat: 'food',
+        emoji: '🍞',
+        name: 'Food & Drink',
+        meta: '6 min',
+        teach: [{
+          tag: 'Lesson 11',
+          title: '<em>Essen</em> und <em>Trinken</em>',
+          subtitle: "Germans love their bread, beer, and coffee. These words will get you through any bakery or café.",
+          blocks: [
+            { de: 'das Brot', en: 'bread', note: "Germany has over 300 varieties of bread." },
+            { de: 'das Wasser', en: 'water' },
+            { de: 'der Kaffee', en: 'coffee' },
+            { de: 'das Bier', en: 'beer' },
+            { de: 'der Apfel', en: 'apple' },
+            { de: 'die Milch', en: 'milk' },
+            { de: 'der Käse', en: 'cheese' },
+            { de: 'Ich möchte...', en: 'I would like...', note: 'The polite way to order: "Ich möchte einen Kaffee, bitte."' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', word: 'das Brot', prompt: 'How do you say "bread"?', answer: 'das Brot', options: ['das Brot', 'der Käse', 'die Milch', 'das Wasser'] },
+          { type: 'choice', word: 'der Kaffee', prompt: '"der Kaffee" means...', answer: 'coffee', options: ['coffee', 'tea', 'water', 'milk'] },
+          { type: 'choice', word: 'das Bier', prompt: 'How do you say "I would like a beer"?', answer: 'Ich möchte ein Bier', options: ['Ich möchte ein Bier', 'Ich habe ein Bier', 'Ich bin ein Bier', 'Ich trinke Wasser'] },
+          { type: 'choice', word: 'der Apfel', prompt: '"der Apfel" is...', answer: 'an apple', options: ['an apple', 'a pear', 'an orange', 'a banana'] },
+          { type: 'speak', target: 'Ich möchte einen Kaffee', en: 'I would like a coffee', word: 'der Kaffee' }
+        ]
+      },
+      {
+        id: 'colors',
+        cat: 'colors',
+        emoji: '🎨',
+        name: 'Colors',
+        meta: '4 min',
+        teach: [{
+          tag: 'Lesson 12',
+          title: 'The <em>Farben</em>',
+          subtitle: "Colors function as adjectives. They go before the noun, just like English.",
+          blocks: [
+            { de: 'rot', en: 'red' },
+            { de: 'blau', en: 'blue' },
+            { de: 'grün', en: 'green' },
+            { de: 'gelb', en: 'yellow' },
+            { de: 'schwarz', en: 'black' },
+            { de: 'weiß', en: 'white' },
+            { de: 'das rote Auto', en: 'the red car', note: "Color before the noun. Endings change with the article — for now, just learn the colors." }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { type: 'color', word: 'rot' }, prompt: 'How do you say "red"?', answer: 'rot', options: ['rot', 'blau', 'grün', 'gelb'] },
+          { type: 'choice', img: { type: 'color', word: 'blau' }, prompt: '"blau" means...', answer: 'blue', options: ['blue', 'red', 'black', 'white'] },
+          { type: 'choice', img: { type: 'color', word: 'schwarz' }, prompt: 'What is "schwarz"?', answer: 'black', options: ['black', 'white', 'gray', 'green'] },
+          { type: 'choice', img: { type: 'color', word: 'gelb' }, prompt: '"yellow" in German is...', answer: 'gelb', options: ['gelb', 'grau', 'grün', 'rot'] },
+          { type: 'speak', target: 'rot', en: 'red', img: { type: 'color', word: 'rot' } }
+        ]
+      },
+      {
+        id: 'days',
+        cat: 'days',
+        emoji: '📅',
+        name: 'Days of the Week',
+        meta: '4 min',
+        teach: [{
+          tag: 'Lesson 13',
+          title: 'Die <em>Wochentage</em>',
+          subtitle: 'All days are masculine (der). They all end in -tag, which means "day".',
+          blocks: [
+            { de: 'der Montag', en: 'Monday', note: 'Mond = moon → moon-day' },
+            { de: 'der Dienstag', en: 'Tuesday' },
+            { de: 'der Mittwoch', en: 'Wednesday', note: 'Literally "mid-week"' },
+            { de: 'der Donnerstag', en: 'Thursday', note: 'Donner = thunder' },
+            { de: 'der Freitag', en: 'Friday' },
+            { de: 'der Samstag', en: 'Saturday' },
+            { de: 'der Sonntag', en: 'Sunday', note: 'Sonne = sun' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { type: 'day', word: 'Mo' }, prompt: 'How do you say "Monday"?', answer: 'Montag', options: ['Montag', 'Dienstag', 'Sonntag', 'Freitag'] },
+          { type: 'choice', img: { type: 'day', word: 'So' }, prompt: '"Sonntag" means...', answer: 'Sunday', options: ['Sunday', 'Saturday', 'Monday', 'Friday'] },
+          { type: 'choice', img: { type: 'day', word: 'Mi' }, prompt: 'Which day is "Mittwoch"?', answer: 'Wednesday', options: ['Wednesday', 'Tuesday', 'Thursday', 'Monday'] },
+          { type: 'choice', img: { type: 'day', word: 'Fr' }, prompt: 'TGI ___ ! (Friday)', answer: 'Freitag', options: ['Freitag', 'Samstag', 'Donnerstag', 'Montag'] }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'around-you',
+    code: 'A1.4',
+    name: 'Around You',
+    tag: 'Describe your world',
+    units: [
+      {
+        id: 'house',
+        cat: 'house',
+        emoji: '🏠',
+        name: 'House & Home',
+        meta: '6 min',
+        teach: [{
+          tag: 'Lesson 14',
+          title: 'Welcome <em>Zuhause</em>',
+          subtitle: "Words for the rooms and items that fill your daily life.",
+          blocks: [
+            { de: 'das Haus', en: 'house' },
+            { de: 'die Wohnung', en: 'apartment' },
+            { de: 'das Zimmer', en: 'room' },
+            { de: 'die Küche', en: 'kitchen' },
+            { de: 'das Bett', en: 'bed' },
+            { de: 'der Tisch', en: 'table' },
+            { de: 'der Stuhl', en: 'chair' },
+            { de: 'die Tür', en: 'door' },
+            { de: 'das Fenster', en: 'window' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', word: 'das Haus', prompt: 'How do you say "house"?', answer: 'das Haus', options: ['das Haus', 'die Wohnung', 'das Zimmer', 'die Küche'] },
+          { type: 'choice', word: 'das Bett', prompt: '"das Bett" means...', answer: 'bed', options: ['bed', 'door', 'window', 'chair'] },
+          { type: 'choice', word: 'die Tür', prompt: 'Which means "door"?', answer: 'die Tür', options: ['die Tür', 'das Fenster', 'der Tisch', 'das Zimmer'] },
+          { type: 'choice', word: 'die Küche', prompt: 'You cook in the...', answer: 'Küche', options: ['Küche', 'Bett', 'Tür', 'Stuhl'] },
+          { type: 'speak', target: 'das Haus', en: 'the house', word: 'das Haus' }
+        ]
+      },
+      {
+        id: 'verbs-common',
+        cat: 'verbs',
+        emoji: '🏃',
+        name: 'Common Verbs',
+        meta: '7 min',
+        teach: [{
+          tag: 'Lesson 15',
+          title: '10 <em>verbs</em> for daily use',
+          subtitle: "Master these and you can describe most of your day. Most regular verbs follow the same pattern — drop -en, add ending.",
+          table: {
+            headers: ['Verb', 'Meaning', 'ich-form'],
+            rows: [
+              ['gehen', 'to go', 'ich gehe'],
+              ['kommen', 'to come', 'ich komme'],
+              ['machen', 'to do/make', 'ich mache'],
+              ['sehen', 'to see', 'ich sehe'],
+              ['essen', 'to eat', 'ich esse'],
+              ['trinken', 'to drink', 'ich trinke'],
+              ['lernen', 'to learn', 'ich lerne'],
+              ['arbeiten', 'to work', 'ich arbeite'],
+              ['wohnen', 'to live', 'ich wohne']
+            ]
+          },
+          blocks: [
+            { de: 'Ich wohne in Berlin.', en: 'I live in Berlin.' },
+            { de: 'Du lernst Deutsch.', en: 'You are learning German.' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '🏃', bg: '#A7F3D0' }, prompt: 'How do you say "to go"?', answer: 'gehen', options: ['gehen', 'kommen', 'machen', 'sagen'] },
+          { type: 'choice', img: { emoji: '🍕', bg: '#FED7AA' }, prompt: '"Ich esse" means...', answer: 'I eat', options: ['I eat', 'I drink', 'I see', 'I learn'], why: { title: 'Verb conjugation', text: 'essen (to eat) → ich esse. The -en ending becomes -e for "ich". This pattern works for almost all regular verbs: lernen → ich lerne, wohnen → ich wohne.' } },
+          { type: 'build', img: { emoji: '📚', bg: '#FEF08A' }, prompt: 'Build: "I learn German"', answer: 'Ich lerne Deutsch', words: ['Ich', 'lerne', 'Deutsch', 'esse', 'wohne'] },
+          { type: 'choice', img: { emoji: '🏠', bg: '#FED7AA' }, prompt: '"Ich wohne in Berlin" means...', answer: 'I live in Berlin', options: ['I live in Berlin', 'I work in Berlin', 'I go to Berlin', 'I see Berlin'] },
+          { type: 'speak', target: 'Ich lerne Deutsch', en: 'I learn German', img: { emoji: '📚', bg: '#FEF08A' } }
+        ]
+      },
+      {
+        id: 'self-intro',
+        cat: 'pronouns',
+        emoji: '🗣️',
+        name: 'Introduce Yourself',
+        meta: '8 min · final',
+        teach: [{
+          tag: 'Lesson 16 · final',
+          title: 'Your first <em>conversation</em>',
+          subtitle: "You now know enough to introduce yourself! Here's a complete intro.",
+          blocks: [
+            { de: 'Hallo! Ich heiße Anna.', en: "Hello! My name is Anna." },
+            { de: 'Ich komme aus Amerika.', en: 'I come from America.' },
+            { de: 'Ich wohne in Berlin.', en: 'I live in Berlin.' },
+            { de: 'Ich bin 28 Jahre alt.', en: 'I am 28 years old.', note: "Age uses sein, not haben." },
+            { de: 'Ich lerne Deutsch.', en: 'I am learning German.' },
+            { de: 'Freut mich!', en: 'Nice to meet you!' }
+          ]
+        }],
+        questions: [
+          { type: 'choice', img: { emoji: '🗣️', bg: '#F3E8FF' }, prompt: 'How do you say "My name is..."?', answer: 'Ich heiße...', options: ['Ich heiße...', 'Ich komme...', 'Ich wohne...', 'Ich bin...'] },
+          { type: 'choice', img: { emoji: '🌍', bg: '#BAE6FD' }, prompt: '"Ich komme aus..." means...', answer: 'I come from...', options: ['I come from...', 'I live in...', 'I go to...', 'I am from...'] },
+          { type: 'choice', img: { emoji: '🏠', bg: '#FED7AA' }, prompt: 'How do you say "I live in Berlin"?', answer: 'Ich wohne in Berlin', options: ['Ich wohne in Berlin', 'Ich komme aus Berlin', 'Ich gehe nach Berlin', 'Ich bin Berlin'] },
+          { type: 'speak', target: 'Ich lerne Deutsch', en: 'I am learning German', img: { emoji: '📚', bg: '#FEF08A' } },
+          { type: 'choice', img: { emoji: '🎂', bg: '#FBCFE8' }, prompt: 'How do you say "I am 25 years old"?', answer: 'Ich bin 25 Jahre alt', options: ['Ich bin 25 Jahre alt', 'Ich habe 25 Jahre', 'Ich bin 25 alt', 'Ich Jahre 25 alt'], why: { title: 'Age uses sein', text: 'In German, age uses "sein" (to be), not "haben" (to have). "Ich bin 25" = literally "I am 25". This is opposite to French/Spanish.' } },
+          { type: 'speak', target: 'Freut mich', en: 'Nice to meet you', img: { emoji: '🤝', bg: '#FED7AA' } }
+        ]
+      }
+    ]
+  }
+];
+
+// ====================================================================
+// 3D SCENES (HYBRID FEATURE) — premium milestone moments
+// ====================================================================
+
+// ====================================================================
+// BRUNO THE MASCOT
+// ====================================================================
+// Returns the SVG markup for Bruno in any state.
+// state: 'idle' | 'cheer' | 'sad' | 'sprint' | 'wave' | 'sleep'
+
+function brunoSVG(state = 'idle', skinTone = '#fdbcb4') {
+  return `
+    <div class="bruno" data-state="${state}">
+      <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sparkle effect (cheer state) -->
+        <g class="b-effect b-effect-sparkle">
+          <circle cx="20" cy="25" r="2" fill="#FFD166"/>
+          <circle cx="80" cy="20" r="2.5" fill="#FF5C39"/>
+          <circle cx="85" cy="40" r="1.8" fill="#FFD166"/>
+          <circle cx="15" cy="45" r="2" fill="#FF5C39"/>
+          <path d="M 50 8 L 51 14 L 57 13 L 52 17 L 54 23 L 50 19 L 46 23 L 48 17 L 43 13 L 49 14 Z" fill="#FFD166"/>
+        </g>
+        
+        <!-- Sleep Z's -->
+        <g class="b-effect b-effect-zzz">
+          <text x="65" y="25" font-family="Fraunces, serif" font-size="14" font-weight="700" fill="#6B6560">Z</text>
+          <text x="73" y="18" font-family="Fraunces, serif" font-size="10" font-weight="700" fill="#6B6560" opacity="0.6">z</text>
+        </g>
+        
+        <!-- Body group (everything moves together) -->
+        <g class="b-body">
+          <!-- Legs (drawn first, behind body) -->
+          <g class="b-leg-l">
+            <rect x="40" y="80" width="8" height="22" rx="4" fill="#1A1614"/>
+            <ellipse cx="44" cy="105" rx="6" ry="3" fill="#1A1614"/>
+          </g>
+          <g class="b-leg-r">
+            <rect x="52" y="80" width="8" height="22" rx="4" fill="#1A1614"/>
+            <ellipse cx="56" cy="105" rx="6" ry="3" fill="#1A1614"/>
+          </g>
+          
+          <!-- Torso -->
+          <rect x="33" y="50" width="34" height="38" rx="14" fill="#FF5C39"/>
+          <!-- Subtle stripe accent (German flag colors as a tiny detail) -->
+          <rect x="33" y="68" width="34" height="3" fill="#1A1614" opacity="0.3"/>
+          <rect x="33" y="71" width="34" height="3" fill="#dd0000" opacity="0.3"/>
+          <rect x="33" y="74" width="34" height="3" fill="#FFCE00" opacity="0.3"/>
+          
+          <!-- Arms -->
+          <g class="b-arm-l">
+            <rect x="22" y="52" width="8" height="24" rx="4" fill="#FF5C39"/>
+            <circle cx="26" cy="78" r="5" fill="${skinTone}"/>
+          </g>
+          <g class="b-arm-r">
+            <rect x="70" y="52" width="8" height="24" rx="4" fill="#FF5C39"/>
+            <circle cx="74" cy="78" r="5" fill="${skinTone}"/>
+          </g>
+          
+          <!-- Head -->
+          <g class="b-head">
+            <!-- Head base -->
+            <circle cx="50" cy="35" r="22" fill="${skinTone}"/>
+            <!-- Hair (simple cap) -->
+            <path d="M 30 30 Q 30 16 50 14 Q 70 16 70 30 Q 65 22 50 22 Q 35 22 30 30 Z" fill="#3a2818"/>
+            <!-- Eyes -->
+            <ellipse class="b-eye-l" cx="42" cy="36" rx="2.5" ry="3" fill="#1A1614"/>
+            <ellipse class="b-eye-r" cx="58" cy="36" rx="2.5" ry="3" fill="#1A1614"/>
+            <!-- Eye highlights (life) -->
+            <circle cx="43" cy="35" r="0.8" fill="white"/>
+            <circle cx="59" cy="35" r="0.8" fill="white"/>
+            <!-- Cheek dots -->
+            <circle cx="36" cy="42" r="2" fill="#FF8A65" opacity="0.5"/>
+            <circle cx="64" cy="42" r="2" fill="#FF8A65" opacity="0.5"/>
+            <!-- Mouth (defaults to small smile, animations override path) -->
+            <path class="b-mouth" d="M 44 46 Q 50 50 56 46" stroke="#1A1614" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  `;
+}
+
+// Show full-screen mascot reaction (overlay)
+let reactionTimer = null;
+function brunoReact(state, message = null, duration = 1800) {
+  let el = document.getElementById('brunoReaction');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'brunoReaction';
+    el.className = 'bruno-reaction';
+    document.body.appendChild(el);
+  }
+  
+  el.innerHTML = `
+    ${brunoSVG(state)}
+    ${message ? `<div style="position:absolute; bottom:30%; left:50%; transform:translateX(-50%); background:white; padding:12px 22px; border-radius:100px; font-family:'Fraunces',serif; font-size:18px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,0.15); white-space:nowrap;">${message}</div>` : ''}
+  `;
+  
+  el.classList.add('show');
+  clearTimeout(reactionTimer);
+  reactionTimer = setTimeout(() => {
+    el.classList.remove('show');
+  }, duration);
+}
+
+// Update home-screen mascot card based on app state
+function updateBrunoCard() {
+  const card = document.getElementById('brunoCard');
+  if (!card) return;
+  
+  const profile = state.profile || {};
+  const name = profile.name || 'friend';
+  
+  let mascotState = 'idle';
+  let line = '';
+  let sub = '';
+  
+  if (state.hearts === 0) {
+    mascotState = 'sleep';
+    line = `Bruno is taking a break.`;
+    sub = `Hearts refill in a few hours. Come back soon, ${name}.`;
+  } else if (state.todayXP >= state.dailyGoal) {
+    mascotState = 'cheer';
+    line = `Goal hit! <em>Sehr gut</em>, ${name}.`;
+    sub = `Bruno is proud. Want to keep going?`;
+  } else if (state.streak >= 3) {
+    mascotState = 'sprint';
+    line = `${state.streak}-week streak with Bruno!`;
+    sub = `Don't let him stop. Today's lesson awaits.`;
+  } else if (state.todayXP > 0) {
+    mascotState = 'sprint';
+    line = `Halfway there, ${name}!`;
+    sub = `Bruno is sprinting alongside you.`;
+  } else if (state.totalXP === 0) {
+    mascotState = 'wave';
+    line = `Hi ${name}, I'm <em>Bruno</em>.`;
+    sub = `I'll cheer you on every lesson. Let's start!`;
+  } else {
+    mascotState = 'idle';
+    line = `Welcome back, ${name}.`;
+    sub = `Bruno is ready when you are.`;
+  }
+  
+  card.innerHTML = `
+    ${brunoSVG(mascotState)}
+    <div class="bruno-card-text">
+      <div class="bruno-card-line">${line}</div>
+      <div class="bruno-card-sub">${sub}</div>
+    </div>
+  `;
+}
+
+// 3D scene per level — each unlocks after the LAST unit of its level (capstone)
+// Order matches curriculum: A1.1 → A1.2 → A1.3 → A1.4
+const SCENES_3D = [
+  {
+    id: 'foundations',
+    levelCode: 'A1.1',
+    levelName: 'Foundations',
+    afterUnit: 'pronouns',  // Last unit of A1.1
+    tag: 'A1.1 Capstone · Step into 3D',
+    title: 'First Day in Berlin',
+    desc: 'Greet shopkeepers, count apples, pay in euros. Use everything you learned in Foundations.',
+    cta: 'Enter Berlin',
+    preview: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="foundSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b1d9ff"/>
+          <stop offset="100%" stop-color="#d8eeff"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="105" fill="url(#foundSky)"/>
+      <rect y="105" width="400" height="55" fill="#a8a8a8"/>
+      <!-- buildings -->
+      <rect x="0" y="35" width="120" height="70" fill="#faeed1"/>
+      <polygon points="0,35 60,15 120,35" fill="#8b3a3a"/>
+      <rect x="20" y="55" width="20" height="25" fill="#b1d9ff"/>
+      <rect x="60" y="55" width="20" height="25" fill="#b1d9ff"/>
+      <rect x="280" y="35" width="120" height="70" fill="#fae3bc"/>
+      <polygon points="280,35 340,15 400,35" fill="#8b3a3a"/>
+      <rect x="300" y="55" width="20" height="25" fill="#b1d9ff"/>
+      <rect x="345" y="55" width="20" height="25" fill="#b1d9ff"/>
+      <!-- market stall -->
+      <rect x="50" y="80" width="60" height="35" fill="#8b5a2b"/>
+      <rect x="45" y="65" width="70" height="18" fill="#c40e0e"/>
+      <line x1="48" y1="65" x2="48" y2="115" stroke="#4a3520" stroke-width="2"/>
+      <line x1="112" y1="65" x2="112" y2="115" stroke="#4a3520" stroke-width="2"/>
+      <!-- shopkeeper -->
+      <ellipse cx="80" cy="92" rx="10" ry="14" fill="#4a6b8a"/>
+      <circle cx="80" cy="78" r="8" fill="#fdbcb4"/>
+      <path d="M 73,75 Q 80,72 87,75" stroke="#c0c0c0" stroke-width="3" fill="none"/>
+      <!-- fountain -->
+      <ellipse cx="200" cy="125" rx="35" ry="12" fill="#a0a0a0"/>
+      <ellipse cx="200" cy="120" rx="32" ry="8" fill="#4a90c8"/>
+      <rect x="195" y="105" width="10" height="20" fill="#a0a0a0"/>
+      <!-- child -->
+      <ellipse cx="280" cy="120" rx="7" ry="10" fill="#ff5c39"/>
+      <circle cx="280" cy="108" r="6" fill="#fdbcb4"/>
+      <!-- elder with cane -->
+      <ellipse cx="340" cy="118" rx="8" ry="12" fill="#8a6e4a"/>
+      <circle cx="340" cy="103" r="7" fill="#fdbcb4"/>
+      <line x1="348" y1="115" x2="350" y2="135" stroke="#4a3520" stroke-width="2"/>
+      <!-- coins -->
+      <ellipse cx="155" cy="118" rx="7" ry="2" fill="#d4a017"/>
+      <ellipse cx="155" cy="115" rx="7" ry="2" fill="#c0c0c0"/>
+      <ellipse cx="155" cy="112" rx="7" ry="2" fill="#d4a017"/>
+      <!-- apples -->
+      <circle cx="240" cy="115" r="4" fill="#d0342c"/>
+      <circle cx="247" cy="115" r="4" fill="#d0342c"/>
+      <circle cx="243" cy="110" r="4" fill="#d0342c"/>
+      <!-- sun -->
+      <circle cx="350" cy="30" r="14" fill="#fff4a6"/>
+    </svg>`
+  },
+  {
+    id: 'school',
+    levelCode: 'A1.2',
+    levelName: 'First Sentences',
+    afterUnit: 'questions',  // Last unit of A1.2
+    tag: 'A1.2 Capstone · Step into 3D',
+    title: 'The Language School',
+    desc: 'Meet classmates and a teacher. Practice Wer, Was, Wo. Use sein and haben in real conversations.',
+    cta: 'Enter the school',
+    preview: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="schoolBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e0e7ff"/>
+          <stop offset="100%" stop-color="#f0e7d8"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="100" fill="url(#schoolBg)"/>
+      <rect y="100" width="400" height="60" fill="#9d8567"/>
+      <!-- blackboard -->
+      <rect x="50" y="20" width="180" height="65" fill="#1a4020" stroke="#6b4423" stroke-width="4"/>
+      <!-- "Hallo!" in chalk -->
+      <text x="65" y="60" font-family="Georgia,serif" font-size="32" fill="#ffffff" font-weight="bold">Hallo!</text>
+      <!-- German flag poster -->
+      <rect x="260" y="25" width="80" height="20" fill="#000000"/>
+      <rect x="260" y="45" width="80" height="20" fill="#dd0000"/>
+      <rect x="260" y="65" width="80" height="20" fill="#ffce00"/>
+      <!-- teacher's desk -->
+      <rect x="60" y="95" width="60" height="6" fill="#8b5a2b"/>
+      <line x1="65" y1="101" x2="65" y2="118" stroke="#4a3520" stroke-width="3"/>
+      <line x1="115" y1="101" x2="115" y2="118" stroke="#4a3520" stroke-width="3"/>
+      <!-- teacher with glasses -->
+      <ellipse cx="90" cy="130" rx="10" ry="14" fill="#4a3520"/>
+      <circle cx="90" cy="115" r="9" fill="#fdbcb4"/>
+      <circle cx="86" cy="114" r="2.5" fill="none" stroke="#1a1614" stroke-width="1"/>
+      <circle cx="94" cy="114" r="2.5" fill="none" stroke="#1a1614" stroke-width="1"/>
+      <rect x="88" y="120" width="3" height="14" fill="#c40e0e"/>
+      <!-- student desks -->
+      <rect x="180" y="120" width="40" height="5" fill="#c89a64"/>
+      <rect x="240" y="120" width="40" height="5" fill="#c89a64"/>
+      <rect x="300" y="120" width="40" height="5" fill="#c89a64"/>
+      <!-- student male with backpack -->
+      <ellipse cx="200" cy="138" rx="8" ry="11" fill="#2d5a8a"/>
+      <circle cx="200" cy="125" r="7" fill="#fdbcb4"/>
+      <rect x="194" y="135" width="12" height="10" fill="#c40e0e"/>
+      <!-- student female -->
+      <ellipse cx="260" cy="138" rx="8" ry="11" fill="#c63d68"/>
+      <circle cx="260" cy="125" r="7" fill="#fdbcb4"/>
+      <ellipse cx="260" cy="128" rx="9" ry="11" fill="#6b4423" opacity="0.4"/>
+      <!-- book on desk -->
+      <rect x="318" y="115" width="14" height="3" fill="#c40e0e"/>
+      <rect x="318" y="115" width="14" height="2" fill="#fff5e1"/>
+      <!-- clock -->
+      <circle cx="370" cy="35" r="20" fill="#faf0e0" stroke="#4a3520" stroke-width="3"/>
+      <line x1="370" y1="35" x2="370" y2="22" stroke="#1a1614" stroke-width="2"/>
+      <line x1="370" y1="35" x2="380" y2="35" stroke="#1a1614" stroke-width="1.5"/>
+      <circle cx="370" cy="35" r="2" fill="#1a1614"/>
+    </svg>`
+  },
+  {
+    id: 'cafe',
+    levelCode: 'A1.3',
+    levelName: 'Everyday Life',
+    afterUnit: 'days',  // Last unit of A1.3
+    tag: 'A1.3 Capstone · Step into 3D',
+    title: 'Berlin Café',
+    desc: 'Order coffee, bread, and cake. Practice food vocabulary and "Ich möchte" in a real café.',
+    cta: 'Enter the café',
+    preview: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="cafeBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f5e8d4"/>
+          <stop offset="100%" stop-color="#e8d4b4"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="100" fill="url(#cafeBg)"/>
+      <rect y="100" width="400" height="60" fill="#d4a574"/>
+      <rect x="0" y="75" width="120" height="40" fill="#6b4423"/>
+      <rect x="10" y="70" width="100" height="6" fill="#8b5a2b"/>
+      <ellipse cx="40" cy="68" rx="10" ry="3" fill="#fff"/>
+      <rect x="34" y="55" width="12" height="14" fill="#fff" rx="2"/>
+      <ellipse cx="40" cy="55" rx="6" ry="2" fill="#3e2418"/>
+      <rect x="70" y="58" width="30" height="12" fill="#8b4513" rx="2"/>
+      <rect x="70" y="55" width="30" height="6" fill="#fff5e1" rx="2"/>
+      <circle cx="85" cy="53" r="3" fill="#c40e0e"/>
+      <rect x="180" y="90" width="80" height="6" fill="#8b5a2b"/>
+      <line x1="200" y1="96" x2="200" y2="115" stroke="#4a3520" stroke-width="3"/>
+      <line x1="240" y1="96" x2="240" y2="115" stroke="#4a3520" stroke-width="3"/>
+      <circle cx="200" cy="84" r="6" fill="#d0342c"/>
+      <line x1="200" y1="78" x2="200" y2="74" stroke="#4a2c14" stroke-width="2"/>
+      <rect x="230" y="74" width="10" height="20" fill="#a8d8e8" opacity="0.7" rx="2"/>
+      <rect x="232" y="71" width="6" height="3" fill="#2266aa"/>
+      <rect x="290" y="90" width="25" height="4" fill="#6b4423"/>
+      <rect x="290" y="65" width="25" height="25" fill="#6b4423"/>
+      <rect x="320" y="20" width="60" height="40" fill="#b1d9ff" stroke="#fff" stroke-width="2"/>
+    </svg>`
+  },
+  {
+    id: 'apartment',
+    levelCode: 'A1.4',
+    levelName: 'Around You',
+    afterUnit: 'self-intro',  // Last unit of A1.4 (the final lesson)
+    tag: 'A1.4 Capstone · Step into 3D',
+    title: 'Your New Apartment',
+    desc: 'Explore your German apartment. Name furniture, use sein and haben to describe your home.',
+    cta: 'Enter the apartment',
+    preview: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="aptSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FEDFA0"/>
+          <stop offset="100%" stop-color="#FAE3BC"/>
+        </linearGradient>
+        <linearGradient id="aptFloor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#9b7653"/>
+          <stop offset="100%" stop-color="#6b4423"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="100" fill="url(#aptSky)"/>
+      <rect y="100" width="400" height="60" fill="url(#aptFloor)"/>
+      <rect x="40" y="30" width="60" height="50" fill="#b1d9ff" stroke="#fff" stroke-width="3"/>
+      <line x1="70" y1="30" x2="70" y2="80" stroke="#fff" stroke-width="2"/>
+      <line x1="40" y1="55" x2="100" y2="55" stroke="#fff" stroke-width="2"/>
+      <rect x="120" y="80" width="100" height="35" fill="#6b4423" rx="3"/>
+      <rect x="125" y="65" width="90" height="20" fill="#faeed1" rx="3"/>
+      <rect x="170" y="55" width="40" height="14" fill="#ff5c39" rx="2"/>
+      <rect x="130" y="60" width="20" height="10" fill="#ffffff" rx="2"/>
+      <line x1="270" y1="100" x2="270" y2="50" stroke="#3a2818" stroke-width="3"/>
+      <ellipse cx="270" cy="48" rx="20" ry="10" fill="#faeed1"/>
+      <circle cx="270" cy="50" r="6" fill="#fff4a6"/>
+      <rect x="320" y="85" width="35" height="6" fill="#6b4423"/>
+      <rect x="320" y="60" width="35" height="25" fill="#6b4423"/>
+      <line x1="325" y1="91" x2="325" y2="105" stroke="#6b4423" stroke-width="3"/>
+      <line x1="350" y1="91" x2="350" y2="105" stroke="#6b4423" stroke-width="3"/>
+    </svg>`
+  }
+];
+
+function isScene3DUnlocked(scene) {
+  return state.completedUnits.includes(scene.afterUnit);
+}
+
+function isScene3DCompleted(scene) {
+  return (state.completedScenes3D || []).includes(scene.id);
+}
+
+function renderScenes3D() {
+  const container = document.getElementById('scene3dContainer');
+  const section = document.getElementById('scene3dSection');
+  if (!container) return;
+  
+  // Show the section as soon as the user has any progress; the cards themselves handle locked state
+  if (section) section.style.display = 'block';
+  
+  const html = SCENES_3D.map(scene => {
+    const unlocked = isScene3DUnlocked(scene);
+    const completed = isScene3DCompleted(scene);
+    
+    return `
+      <div class="scene3d-card ${unlocked ? '' : 'locked'}" ${unlocked ? `onclick="launchScene3D('${scene.id}')"` : ''}>
+        <div class="scene3d-preview">
+          ${scene.preview}
+          <div class="scene3d-badge">✨ 3D Scene</div>
+        </div>
+        <div class="scene3d-content">
+          <div class="scene3d-tag">${scene.tag}</div>
+          <div class="scene3d-title">${scene.title}</div>
+          <div class="scene3d-desc">${scene.desc}</div>
+          ${unlocked 
+            ? `<div class="scene3d-cta">${completed ? '↻ Replay' : scene.cta} →</div>`
+            : ''}
+        </div>
+        ${!unlocked ? `
+          <div class="scene3d-locked-overlay">
+            <div class="scene3d-locked-icon">🔒</div>
+            <div class="scene3d-locked-text">Complete the <strong>${scene.levelName}</strong> level to unlock</div>
+          </div>
+        ` : ''}
+        ${completed ? `<div class="scene3d-completed">✓ Complete</div>` : ''}
+      </div>
+    `;
+  }).join('');
+  
+  container.innerHTML = html;
+}
+
+function getUnitName(unitId) {
+  for (const level of curriculum) {
+    for (const unit of level.units) {
+      if (unit.id === unitId) return unit.name;
+    }
+  }
+  return unitId;
+}
+
+function launchScene3D(sceneId) {
+  // Same-folder relative link. Both files MUST be in the same folder.
+  // If 404, check that deutschsprint-3d.html exists alongside this file.
+  const url = `deutschsprint-3d.html?scene=${sceneId}`;
+  
+  // Pre-flight check: HEAD request to detect missing file before navigating
+  fetch(url, { method: 'HEAD' }).then(r => {
+    if (r.ok) {
+      window.location.href = url;
+    } else {
+      show3DMissingError();
+    }
+  }).catch(() => {
+    // fetch fails on file:// in some browsers — just try the navigation
+    window.location.href = url;
+  });
+}
+
+function show3DMissingError() {
+  showModal(`
+    <div class="modal-icon">📁</div>
+    <h2 class="modal-title">3D file not found</h2>
+    <p class="modal-text">Make sure <strong>deutschsprint-3d.html</strong> is in the same folder as this app. Both files must live side by side.</p>
+    <div class="modal-actions"><button class="modal-btn primary" onclick="closeModal()">Got it</button></div>
+  `);
+}
+
+// Scenarios — comic-strip dialogues (unlocked every 4 units)
+const SCENARIOS = [
+  {
+    id: 'cafe',
+    afterUnit: 'food',
+    title: 'At the Berliner Café',
+    subtitle: 'Order a coffee like a local.',
+    name: 'Café im Volkspark',
+    desc: 'Practice ordering with a real dialogue',
+    icon: '☕',
+    bg: '#FED7AA',
+    dialogue: [
+      { speaker: 'them', name: 'Kellnerin', de: 'Guten Tag! Was möchten Sie?', en: 'Hello! What would you like?' },
+      { speaker: 'you', placeholder: true, de: 'Ich möchte einen Kaffee', en: 'I would like a coffee', words: ['Ich', 'möchte', 'einen', 'Kaffee', 'habe', 'der'] },
+      { speaker: 'them', name: 'Kellnerin', de: 'Mit Milch?', en: 'With milk?' },
+      { speaker: 'you', placeholder: true, de: 'Ja, bitte', en: 'Yes, please', words: ['Ja', 'bitte', 'Nein', 'danke'] },
+      { speaker: 'them', name: 'Kellnerin', de: 'Das macht 3 Euro.', en: "That's 3 euros." },
+      { speaker: 'you', placeholder: true, de: 'Danke schön', en: 'Thank you very much', words: ['Danke', 'schön', 'Bitte', 'Tschüss'] }
+    ]
+  },
+  {
+    id: 'introduction',
+    afterUnit: 'self-intro',
+    title: 'Meeting a Berliner',
+    subtitle: 'Have your first real conversation.',
+    name: 'Beim Sprachkurs',
+    desc: 'Introduce yourself with confidence',
+    icon: '🤝',
+    bg: '#BAE6FD',
+    dialogue: [
+      { speaker: 'them', name: 'Max', de: 'Hallo! Wie heißt du?', en: 'Hello! What\'s your name?' },
+      { speaker: 'you', placeholder: true, de: 'Ich heiße Anna', en: 'My name is Anna', words: ['Ich', 'heiße', 'Anna', 'bin', 'komme'] },
+      { speaker: 'them', name: 'Max', de: 'Woher kommst du?', en: 'Where are you from?' },
+      { speaker: 'you', placeholder: true, de: 'Ich komme aus Amerika', en: 'I come from America', words: ['Ich', 'komme', 'aus', 'Amerika', 'wohne', 'in'] },
+      { speaker: 'them', name: 'Max', de: 'Freut mich!', en: 'Nice to meet you!' }
+    ]
+  }
+];
+
+// ====================================================================
+// PART 3: STATE & PERSISTENCE
+// ====================================================================
+
+const STATE_KEY = 'sprechen_v4';
+const defaultState = {
+  onboarded: false,
+  dailyGoal: 20,
+  todayXP: 0,
+  totalXP: 0,
+  streak: 0,
+  hearts: 5,
+  lastHeartRefill: Date.now(),
+  freezes: 0,
+  lastActiveDate: null,
+  weekHistory: {},
+  unitProgress: {},
+  completedUnits: [],
+  completedScenarios: [],
+  // SRS: word -> { attempts, correct, lastSeen, weakness }
+  wordStats: {},
+  // Profile (local-only — name + avatar emoji)
+  profile: null  // { name: string, avatar: string } when set
+};
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STATE_KEY);
+    if (saved) return { ...defaultState, ...JSON.parse(saved) };
+  } catch(e) {}
+  return { ...defaultState };
+}
+
+function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+// SRS: track answer
+function recordAnswer(word, correct) {
+  if (!word) return;
+  if (!state.wordStats[word]) {
+    state.wordStats[word] = { attempts: 0, correct: 0, lastSeen: Date.now() };
+  }
+  const s = state.wordStats[word];
+  s.attempts++;
+  if (correct) s.correct++;
+  s.lastSeen = Date.now();
+}
+
+// Get the 5 weakest words for the SRS carousel
+function getWeakWords() {
+  const now = Date.now();
+  const stats = Object.entries(state.wordStats)
+    .filter(([w]) => WORD_ASSETS[w] || ['Hallo', 'Danke', 'Bitte', 'sein', 'haben'].includes(w))
+    .map(([word, s]) => {
+      const errorRate = (s.attempts - s.correct + 1) / (s.attempts + 1);
+      const daysSince = Math.max(1, (now - s.lastSeen) / (1000 * 60 * 60 * 24));
+      const weakness = errorRate * Math.sqrt(daysSince) * (s.attempts > 0 ? 1 : 0);
+      return { word, ...s, weakness };
+    })
+    .filter(s => s.attempts > 0)
+    .sort((a, b) => b.weakness - a.weakness);
+  return stats.slice(0, 5);
+}
+
+// ====================================================================
+// PART 4: FLOOR GOALS & DAILY ROLLOVER
+// ====================================================================
+
+function getThisWeekDays() {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
+  
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  return days;
+}
+
+function getThisWeekHits() {
+  return getThisWeekDays().filter(k => (state.weekHistory[k] || 0) >= state.dailyGoal).length;
+}
+
+function checkDailyRollover() {
+  const today = todayKey();
+  if (state.lastActiveDate !== today) {
+    if (state.lastActiveDate) {
+      // Floor goal logic: streak = consecutive WEEKS where you hit goal 5+ days
+      // For daily streak display, we use a simpler "didn't miss too many days" rule
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yKey = yesterday.toISOString().slice(0, 10);
+      const wasYesterday = state.lastActiveDate === yKey;
+      
+      // Count gap days
+      let gapDays = 0;
+      const last = new Date(state.lastActiveDate);
+      const todayD = new Date(today);
+      const diffDays = Math.floor((todayD - last) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays > 1) {
+        // Multiple days missed — use freezes
+        const missedDays = diffDays - 1;
+        if (state.freezes >= missedDays) {
+          state.freezes -= missedDays;
+          showToast(`🧊 ${missedDays} freeze${missedDays > 1 ? 's' : ''} used!`);
+        } else {
+          // Floor goal: only break streak if we miss too many in a week
+          const hits = getThisWeekHits();
+          if (hits < 3) {
+            state.streak = 0;
+          }
+        }
+      }
+    }
+    state.todayXP = 0;
+    state.lastActiveDate = today;
+    
+    // Heart refill: 1 per 4 hours offline
+    const hoursSince = (Date.now() - state.lastHeartRefill) / (1000 * 60 * 60);
+    const refilled = Math.min(5 - state.hearts, Math.floor(hoursSince / 4));
+    if (refilled > 0) {
+      state.hearts = Math.min(5, state.hearts + refilled);
+      state.lastHeartRefill = Date.now();
+    }
+    saveState();
+  }
+}
+
+function awardXP(amount) {
+  // Comeback bonus: 3x first session if last visit > 2 days ago
+  if (state.lastActiveDate) {
+    const last = new Date(state.lastActiveDate);
+    const today = new Date(todayKey());
+    const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+    if (diffDays >= 2 && state.todayXP === 0) {
+      amount *= 3;
+      setTimeout(() => showToast('🎉 Comeback bonus: 3× XP!'), 400);
+    }
+  }
+  
+  const wasGoalMet = state.todayXP >= state.dailyGoal;
+  state.todayXP += amount;
+  state.totalXP += amount;
+  state.weekHistory[todayKey()] = state.todayXP;
+  
+  if (!wasGoalMet && state.todayXP >= state.dailyGoal) {
+    // Hit today's goal — Bruno celebrates first
+    const profileName = (state.profile && state.profile.name) || 'friend';
+    
+    const hits = getThisWeekHits();
+    if (hits === 5) {
+      // Hit weekly floor — increment streak
+      state.streak++;
+      if (state.streak % 2 === 0 && state.freezes < 3) {
+        state.freezes++;
+        setTimeout(() => showFreezeEarned(), 600);
+      }
+      brunoReact('cheer', `🔥 ${state.streak}-week streak!`, 2000);
+      setTimeout(() => showWeekHit(), 2200);
+    } else {
+      brunoReact('cheer', `Goal hit, ${profileName}!`, 1800);
+      setTimeout(() => showGoalHit(), 2000);
+    }
+  }
+  saveState();
+  renderHeader();
+  renderDaily();
+}
+
+// ====================================================================
+// PART 5: NEXT UNIT & UNLOCK LOGIC
+// ====================================================================
+
+function getAllUnits() {
+  const flat = [];
+  curriculum.forEach(level => {
+    level.units.forEach(unit => flat.push({ ...unit, levelCode: level.code, levelName: level.name }));
+  });
+  return flat;
+}
+
+function getNextUnit() {
+  const all = getAllUnits();
+  return all.find(u => !state.completedUnits.includes(u.id)) || all[all.length - 1];
+}
+
+function isUnitUnlocked(unitId) {
+  const all = getAllUnits();
+  const idx = all.findIndex(u => u.id === unitId);
+  if (idx === 0) return true;
+  return state.completedUnits.includes(all[idx - 1].id);
+}
+
+function getUnlockedScenario() {
+  return SCENARIOS.find(s => 
+    state.completedUnits.includes(s.afterUnit) && 
+    !state.completedScenarios.includes(s.id)
+  );
+}
+
+// ====================================================================
+// PART 6: RENDERING
+// ====================================================================
+
+function renderHeader() {
+  document.getElementById('streakNum').textContent = state.streak;
+  document.getElementById('heartsNum').textContent = state.hearts;
+  document.getElementById('xpNum').textContent = state.totalXP;
+  
+  const pill = document.getElementById('streakPill');
+  if (state.streak === 0) pill.classList.add('cold');
+  else pill.classList.remove('cold');
+}
+
+function renderDaily() {
+  const pct = Math.min(100, (state.todayXP / state.dailyGoal) * 100);
+  document.getElementById('dailyFill').style.width = pct + '%';
+  document.getElementById('todayXP').textContent = state.todayXP;
+  document.getElementById('dailyGoal').textContent = state.dailyGoal;
+  document.getElementById('goalDisplay').textContent = state.dailyGoal;
+  document.getElementById('weekStreakNum').textContent = state.streak;
+  
+  // Floor goal info
+  const hits = getThisWeekHits();
+  document.getElementById('floorMet').textContent = hits;
+  document.getElementById('floorFill').style.width = Math.min(100, (hits / 5) * 100) + '%';
+  
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Guten Morgen' : hour < 18 ? 'Guten Tag' : 'Guten Abend';
+  document.getElementById('greeting').textContent = greet;
+  
+  const nextUnit = getNextUnit();
+  let headline, status, btnText;
+  
+  if (state.todayXP >= state.dailyGoal) {
+    headline = 'Goal hit.<br><em>Keep going?</em>';
+    status = '✓ Goal complete';
+    btnText = `Continue: ${nextUnit.name}`;
+  } else if (state.todayXP > 0) {
+    const left = state.dailyGoal - state.todayXP;
+    headline = `Just <em>${left} XP</em> to go.<br>You're nearly there.`;
+    status = `${left} XP left`;
+    btnText = `Continue: ${nextUnit.name}`;
+  } else if (state.streak > 0) {
+    headline = `Keep your<br><em>${state.streak}-week streak</em> alive.`;
+    status = "Hit 5/7 days this week";
+    btnText = `Today: ${nextUnit.name}`;
+  } else {
+    headline = `Start with the<br><em>basics</em>.`;
+    status = "Let's begin";
+    btnText = `Start: ${nextUnit.name}`;
+  }
+  
+  document.getElementById('headline').innerHTML = headline;
+  document.getElementById('goalStatus').textContent = status;
+  document.getElementById('startBtnText').textContent = btnText;
+  
+  renderWeek();
+  renderReview();
+  renderScenario();
+  renderScenes3D();
+  updateBrunoCard();
+}
+
+function renderWeek() {
+  const grid = document.getElementById('weekGrid');
+  const days = getThisWeekDays();
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  
+  grid.innerHTML = '';
+  days.forEach((key, i) => {
+    const d = new Date(key);
+    const xp = state.weekHistory[key] || 0;
+    const completed = xp >= state.dailyGoal;
+    const isToday = key === todayKey();
+    
+    const cell = document.createElement('div');
+    cell.className = 'day-cell' + (completed ? ' completed' : '') + (isToday ? ' today' : '');
+    cell.innerHTML = `<div style="font-size: 10px; opacity: 0.7;">${dayNames[i]}</div><div class="day-num">${d.getDate()}</div>`;
+    grid.appendChild(cell);
+  });
+}
+
+function renderReview() {
+  const weak = getWeakWords();
+  const card = document.getElementById('reviewCard');
+  
+  if (weak.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+  
+  card.style.display = 'block';
+  const container = document.getElementById('reviewWords');
+  container.innerHTML = weak.map(w => {
+    const accuracy = Math.round((w.correct / w.attempts) * 100);
+    // Find English translation by searching curriculum
+    let en = '';
+    for (const level of curriculum) {
+      for (const unit of level.units) {
+        for (const block of (unit.teach[0]?.blocks || [])) {
+          if (block.de === w.word) { en = block.en; break; }
+        }
+      }
+    }
+    return `
+      <div class="review-word">
+        <div class="review-word-de">${w.word}</div>
+        <div class="review-word-en">${en || ''}</div>
+        <div class="review-word-meta">${accuracy}% · ${w.attempts}×</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderScenario() {
+  const scenario = getUnlockedScenario();
+  const card = document.getElementById('scenarioCard');
+  
+  if (!scenario) {
+    card.style.display = 'none';
+    return;
+  }
+  
+  card.style.display = 'block';
+  document.getElementById('scenarioTitle').textContent = scenario.title;
+  document.getElementById('scenarioSubtitle').textContent = scenario.subtitle;
+  document.getElementById('scenarioPreviewName').textContent = scenario.name;
+  document.getElementById('scenarioPreviewDesc').textContent = scenario.desc;
+  document.querySelector('.scenario-preview-icon').textContent = scenario.icon;
+  card.onclick = () => startScenario(scenario);
+}
+
+function renderCurriculum() {
+  const container = document.getElementById('curriculum');
+  container.innerHTML = '';
+  
+  curriculum.forEach((level) => {
+    const totalUnits = level.units.length;
+    const completedInLevel = level.units.filter(u => state.completedUnits.includes(u.id)).length;
+    
+    const section = document.createElement('div');
+    section.className = 'level-section';
+    section.innerHTML = `
+      <div class="level-header">
+        <div class="level-badge">${level.code}</div>
+        <div class="level-info">
+          <div class="level-name">${level.name}</div>
+          <div class="level-tag">${level.tag}</div>
+        </div>
+        <div class="level-progress-tag">${completedInLevel}/${totalUnits}</div>
+      </div>
+      <div class="unit-grid"></div>
+    `;
+    container.appendChild(section);
+    
+    const grid = section.querySelector('.unit-grid');
+    level.units.forEach(unit => {
+      const unlocked = isUnitUnlocked(unit.id);
+      const completed = state.completedUnits.includes(unit.id);
+      const progress = state.unitProgress[unit.id] || 0;
+      
+      const card = document.createElement('div');
+      card.className = 'unit-card' + (!unlocked ? ' locked' : '') + (completed ? ' completed' : '');
+      card.innerHTML = `
+        <div class="unit-icon">${completed ? '✓' : (unlocked ? unit.emoji : '🔒')}</div>
+        <div class="unit-num">${unit.meta}</div>
+        <div class="unit-name">${unit.name}</div>
+        ${progress > 0 && !completed ? `
+          <div class="unit-progress-mini">
+            <div class="unit-progress-mini-bar" style="width: ${progress * 100}%"></div>
+          </div>
+        ` : ''}
+      `;
+      
+      if (unlocked) card.onclick = () => startUnit(unit);
+      grid.appendChild(card);
+    });
+  });
+}
+
+// ====================================================================
+// PART 7: LESSON ENGINE
+// ====================================================================
+
+let currentUnit = null;
+let lessonPhase = 'teach';
+let teachIdx = 0;
+let questionQueue = [];
+let questionIdx = 0;
+let questionsAnswered = 0;
+let questionsCorrect = 0;
+let currentQuestion = null;
+let selectedAnswer = null;
+let answered = false;
+let lessonStartHearts = 5;
+let placedWords = [];
+let isReviewMode = false;
+let isScenarioMode = false;
+let currentScenario = null;
+let scenarioIdx = 0;
+
+function continueLesson() {
+  startUnit(getNextUnit());
+}
+
+function startUnit(unit) {
+  if (state.hearts === 0) { showOutOfHearts(); return; }
+  currentUnit = unit;
+  isReviewMode = false;
+  isScenarioMode = false;
+  lessonPhase = 'teach';
+  teachIdx = 0;
+  
+  // Build question queue, with bridge question (from prev unit) at start
+  const questions = [...unit.questions];
+  
+  // BRIDGE QUESTION: pull a question from previous unit
+  const all = getAllUnits();
+  const idx = all.findIndex(u => u.id === unit.id);
+  if (idx > 0) {
+    const prev = all[idx - 1];
+    if (prev.questions && prev.questions.length > 0) {
+      const bridge = prev.questions.find(q => q.type === 'choice');
+      if (bridge) {
+        questions.unshift({ ...bridge, isBridge: true });
+      }
+    }
+  }
+  
+  questionQueue = questions;
+  questionIdx = 0;
+  questionsAnswered = 0;
+  questionsCorrect = 0;
+  lessonStartHearts = state.hearts;
+  
+  document.getElementById('lessonScreen').classList.add('active');
+  document.getElementById('mainView').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  
+  showTeach();
+}
+
+function startReview() {
+  const weak = getWeakWords();
+  if (weak.length === 0) return;
+  if (state.hearts === 0) { showOutOfHearts(); return; }
+  
+  isReviewMode = true;
+  isScenarioMode = false;
+  currentUnit = { id: 'review', name: 'Word review', emoji: '🎯', cat: 'verbs' };
+  lessonPhase = 'practice';
+  teachIdx = 0;
+  
+  // Build review questions from weak words
+  questionQueue = weak.map(w => {
+    // Find original question for this word
+    for (const level of curriculum) {
+      for (const unit of level.units) {
+        for (const q of unit.questions) {
+          if (q.word === w.word || q.answer === w.word) {
+            return { ...q };
+          }
+        }
+      }
+    }
+    return null;
+  }).filter(Boolean);
+  
+  if (questionQueue.length === 0) {
+    showToast('No review questions available yet');
+    return;
+  }
+  
+  questionIdx = 0;
+  questionsAnswered = 0;
+  questionsCorrect = 0;
+  lessonStartHearts = state.hearts;
+  
+  document.getElementById('lessonScreen').classList.add('active');
+  document.getElementById('mainView').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  showQuestion();
+}
+
+function startScenario(scenario) {
+  isScenarioMode = true;
+  isReviewMode = false;
+  currentScenario = scenario;
+  scenarioIdx = 0;
+  questionsCorrect = 0;
+  questionsAnswered = 0;
+  lessonStartHearts = state.hearts;
+  
+  document.getElementById('lessonScreen').classList.add('active');
+  document.getElementById('mainView').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  
+  showScenarioTurn();
+}
+
+function showScenarioTurn() {
+  const turn = currentScenario.dialogue[scenarioIdx];
+  if (!turn) {
+    completeScenario();
+    return;
+  }
+  
+  document.getElementById('lessonProgress').style.width = ((scenarioIdx / currentScenario.dialogue.length) * 100) + '%';
+  document.getElementById('lessonHearts').textContent = state.hearts;
+  
+  // Show all dialogue up to current turn
+  let bubbles = '';
+  for (let i = 0; i <= scenarioIdx; i++) {
+    const t = currentScenario.dialogue[i];
+    if (t.placeholder && i === scenarioIdx) continue; // skip placeholder of current turn
+    bubbles += `
+      <div class="dialogue-bubble ${t.speaker}">
+        <div class="dialogue-speaker">${t.speaker === 'them' ? t.name : 'You'}</div>
+        <div class="dialogue-text">${t.de}</div>
+        <div class="dialogue-translation">${t.en}</div>
+      </div>
+    `;
+  }
+  
+  if (turn.placeholder) {
+    // It's the user's turn — they need to build the response
+    const body = document.getElementById('lessonBody');
+    body.innerHTML = `
+      <span class="teach-tag">Scenario · ${currentScenario.title}</span>
+      <div class="scenario-bg" style="background: linear-gradient(135deg, ${currentScenario.bg} 0%, white 100%);">
+        <div style="font-size: 8rem;">${currentScenario.icon}</div>
+      </div>
+      ${bubbles}
+      <div style="background: var(--surface); border: 2px dashed var(--accent); border-radius: 14px; padding: 14px; margin-bottom: 12px;">
+        <div style="font-size: 11px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Your turn — say:</div>
+        <div style="font-style: italic; color: var(--ink-soft); margin-bottom: 12px;">"${turn.en}"</div>
+        <div class="build-area" id="buildArea"></div>
+        <div class="word-bank" id="wordBank">
+          ${shuffle(turn.words).map((w, i) => `
+            <div class="word-tile" data-idx="${i}" data-word="${escapeAttr(w)}" onclick="placeWord(this)">${w}</div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    
+    placedWords = [];
+    answered = false;
+    selectedAnswer = null;
+    currentQuestion = { type: 'build', answer: turn.de };
+    document.getElementById('footerBar').style.display = 'flex';
+    document.getElementById('checkBtn').disabled = true;
+    document.getElementById('checkBtn').textContent = 'Say it';
+    document.getElementById('checkBtn').onclick = checkScenarioAnswer;
+  } else {
+    // Just AI turn — auto-advance
+    const body = document.getElementById('lessonBody');
+    body.innerHTML = `
+      <span class="teach-tag">Scenario · ${currentScenario.title}</span>
+      <div class="scenario-bg" style="background: linear-gradient(135deg, ${currentScenario.bg} 0%, white 100%);">
+        <div style="font-size: 8rem;">${currentScenario.icon}</div>
+      </div>
+      ${bubbles}
+    `;
+    
+    document.getElementById('footerBar').style.display = 'flex';
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('checkBtn').textContent = 'Continue';
+    document.getElementById('checkBtn').onclick = () => {
+      scenarioIdx++;
+      showScenarioTurn();
+    };
+    
+    // Speak the AI line
+    setTimeout(() => speak(turn.de), 300);
+  }
+}
+
+function checkScenarioAnswer() {
+  if (answered) {
+    scenarioIdx++;
+    showScenarioTurn();
+    return;
+  }
+  
+  answered = true;
+  questionsAnswered++;
+  const correct = normalizeAnswer(selectedAnswer) === normalizeAnswer(currentQuestion.answer);
+  if (correct) questionsCorrect++;
+  
+  document.querySelectorAll('.word-tile').forEach(t => t.style.pointerEvents = 'none');
+  const buildArea = document.getElementById('buildArea');
+  buildArea.style.borderColor = correct ? 'var(--green)' : '#E63946';
+  buildArea.style.background = correct ? 'var(--green-soft)' : '#FFE0E3';
+  
+  const body = document.getElementById('lessonBody');
+  const banner = document.createElement('div');
+  banner.className = 'feedback-banner ' + (correct ? 'correct' : 'incorrect');
+  banner.innerHTML = correct
+    ? `<strong>Sehr gut!</strong>You said it correctly.`
+    : `<strong>Almost!</strong>The right answer: <em>${currentQuestion.answer}</em>`;
+  body.insertBefore(banner, body.firstChild);
+  
+  if (correct) setTimeout(() => speak(currentQuestion.answer), 200);
+  
+  if (!correct) {
+    state.hearts = Math.max(0, state.hearts - 1);
+    document.getElementById('lessonHearts').textContent = state.hearts;
+    saveState();
+    renderHeader();
+  }
+  
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = 'Continue';
+}
+
+function completeScenario() {
+  const xp = 30;
+  awardXP(xp);
+  if (!state.completedScenarios.includes(currentScenario.id)) {
+    state.completedScenarios.push(currentScenario.id);
+  }
+  saveState();
+  
+  document.getElementById('footerBar').style.display = 'none';
+  const body = document.getElementById('lessonBody');
+  body.innerHTML = `
+    <div class="complete-screen">
+      <div class="complete-icon">🎬</div>
+      <h1 class="complete-title">Scenario complete!</h1>
+      <p class="complete-subtitle">You held your first conversation in German.</p>
+      <div class="complete-stats">
+        <div class="stat-tile xp"><div class="stat-tile-value">+${xp}</div><div class="stat-tile-label">XP earned</div></div>
+        <div class="stat-tile accuracy"><div class="stat-tile-value">${questionsAnswered ? Math.round(questionsCorrect / questionsAnswered * 100) : 100}%</div><div class="stat-tile-label">Accuracy</div></div>
+        <div class="stat-tile streak"><div class="stat-tile-value">${state.streak}🔥</div><div class="stat-tile-label">Streak</div></div>
+      </div>
+      <button class="start-btn" style="max-width: 380px;" onclick="quitLesson()">Back to home <span class="arrow">→</span></button>
+    </div>
+  `;
+}
+
+function showTeach() {
+  const teach = currentUnit.teach[teachIdx];
+  document.getElementById('lessonProgress').style.width = '5%';
+  document.getElementById('lessonHearts').textContent = state.hearts;
+  document.getElementById('footerBar').style.display = 'flex';
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = "Got it · let's practice";
+  document.getElementById('checkBtn').onclick = startQuestions;
+  
+  let blocksHtml = '';
+  if (teach.table) {
+    blocksHtml += `
+      <table class="grammar-table">
+        <thead><tr>${teach.table.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${teach.table.rows.map(row => `
+            <tr>${row.map((cell, i) => `<td class="${i === 0 ? 'de-cell' : ''}">${cell}</td>`).join('')}</tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+  if (teach.blocks) {
+    blocksHtml += teach.blocks.map(b => `
+      <div class="teach-block">
+        <div class="teach-block-de">
+          ${b.de}
+          ${b.de && b.de.length < 40 ? `<button class="listen-btn" onclick="speak('${b.de.replace(/'/g, "\\'")}')">🔊 Listen</button>` : ''}
+        </div>
+        ${b.en ? `<div class="teach-block-en">${b.en}</div>` : ''}
+        ${b.note ? `<div class="teach-block-note">💡 ${b.note}</div>` : ''}
+      </div>
+    `).join('');
+  }
+  
+  document.getElementById('lessonBody').innerHTML = `
+    <span class="teach-tag">${teach.tag}</span>
+    <h1 class="teach-title">${teach.title}</h1>
+    <p class="teach-subtitle">${teach.subtitle}</p>
+    ${blocksHtml}
+  `;
+}
+
+function startQuestions() {
+  lessonPhase = 'practice';
+  questionIdx = 0;
+  document.getElementById('checkBtn').onclick = checkAnswer;
+  showQuestion();
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+// Get image source for a question — uses asset manifest
+function getQuestionImage(q) {
+  if (q.word) return renderImage(q.word);
+  if (q.img) {
+    if (q.img.type) return renderImage(q.img.word, { type: q.img.type });
+    if (q.img.emoji) return renderImage('', { emoji: q.img.emoji, bg: q.img.bg });
+  }
+  return renderImage('', { emoji: currentUnit.emoji });
+}
+
+function showQuestion() {
+  if (questionIdx >= questionQueue.length) {
+    showLessonComplete();
+    return;
+  }
+  
+  currentQuestion = questionQueue[questionIdx];
+  selectedAnswer = null;
+  placedWords = [];
+  answered = false;
+  
+  document.getElementById('lessonProgress').style.width = (10 + (questionIdx / questionQueue.length) * 90) + '%';
+  document.getElementById('footerBar').style.display = 'flex';
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('checkBtn').textContent = currentQuestion.type === 'speak' ? 'Skip' : 'Check';
+  document.getElementById('checkBtn').onclick = checkAnswer;
+  
+  const body = document.getElementById('lessonBody');
+  const cat = currentUnit.cat;
+  const image = getQuestionImage(currentQuestion);
+  
+  // Bridge question banner
+  const bridgeBanner = currentQuestion.isBridge 
+    ? `<div style="background: var(--purple-soft); color: var(--purple); padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 14px; display: inline-block;">📚 Quick review from last lesson</div>` 
+    : '';
+  
+  // Why button
+  const whyBtn = currentQuestion.why 
+    ? `<button class="why-btn" onclick="toggleWhy()">Why? 💡</button>` 
+    : '';
+  
+  if (currentQuestion.type === 'choice') {
+    body.innerHTML = `
+      ${bridgeBanner}
+      <div class="question-prompt">
+        <span>${currentQuestion.prompt}</span>
+        ${whyBtn}
+      </div>
+      <div id="whyContainer"></div>
+      <div class="illustration" data-cat="${cat}">${image}</div>
+      <div class="options-grid">
+        ${currentQuestion.options.map((opt, i) => `
+          <button class="option-btn" data-opt="${escapeAttr(opt)}" onclick="selectOption(this, '${escapeAttr(opt)}')">
+            <span class="option-num">${i+1}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    `;
+  } else if (currentQuestion.type === 'speak') {
+    // SPEAK MODE — the new differentiator
+    body.innerHTML = `
+      ${bridgeBanner}
+      <div class="question-prompt">
+        <span>🎙️ Say it out loud</span>
+        ${whyBtn}
+      </div>
+      <div id="whyContainer"></div>
+      <div class="illustration" data-cat="${cat}">${image}</div>
+      <div class="speak-target">
+        <div class="speak-target-de">${currentQuestion.target}</div>
+        <div class="speak-target-en">"${currentQuestion.en}"</div>
+        <button class="listen-btn" onclick="speak('${currentQuestion.target.replace(/'/g, "\\'")}')">🔊 Hear it</button>
+      </div>
+      <div class="mic-control" id="micControl">
+        <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
+        <div class="mic-status" id="micStatus">Tap to start speaking</div>
+        <div class="mic-transcript" id="micTranscript"></div>
+        <button class="mic-skip" onclick="skipSpeak()">Can't speak right now? Skip</button>
+      </div>
+    `;
+    document.getElementById('checkBtn').textContent = 'Skip';
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('checkBtn').onclick = skipSpeak;
+  } else if (currentQuestion.type === 'build') {
+    body.innerHTML = `
+      ${bridgeBanner}
+      <div class="question-prompt">
+        <span>${currentQuestion.prompt}</span>
+        ${whyBtn}
+      </div>
+      <div id="whyContainer"></div>
+      <div class="illustration" data-cat="${cat}" style="aspect-ratio: 16/8;">${image}</div>
+      <div class="build-area" id="buildArea"></div>
+      <div class="word-bank" id="wordBank">
+        ${shuffle(currentQuestion.words).map((w, i) => `
+          <div class="word-tile" data-idx="${i}" data-word="${escapeAttr(w)}" onclick="placeWord(this)">${w}</div>
+        `).join('')}
+      </div>
+    `;
+  }
+}
+
+function toggleWhy() {
+  const container = document.getElementById('whyContainer');
+  if (!container) return;
+  if (container.innerHTML.trim()) {
+    container.innerHTML = '';
+  } else {
+    const w = currentQuestion.why;
+    container.innerHTML = `
+      <div class="why-panel">
+        <div class="why-panel-title">${w.title}</div>
+        <div>${w.text}</div>
+      </div>
+    `;
+  }
+}
+
+function escapeAttr(s) { return s.replace(/"/g, '&quot;').replace(/'/g, "&#39;"); }
+
+function selectOption(el, opt) {
+  if (answered) return;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAnswer = opt;
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = 'Check';
+}
+
+function onWriteInput(el) {
+  selectedAnswer = el.value.trim();
+  document.getElementById('checkBtn').disabled = selectedAnswer.length === 0;
+}
+
+function placeWord(el) {
+  if (answered) return;
+  const w = el.dataset.word;
+  el.classList.add('used');
+  placedWords.push(w);
+  
+  const buildArea = document.getElementById('buildArea');
+  const tile = document.createElement('div');
+  tile.className = 'word-tile placed';
+  tile.textContent = w;
+  tile.onclick = () => removeWord(tile, el);
+  buildArea.appendChild(tile);
+  
+  selectedAnswer = placedWords.join(' ');
+  document.getElementById('checkBtn').disabled = placedWords.length === 0;
+  if (isScenarioMode) {
+    document.getElementById('checkBtn').textContent = 'Say it';
+  }
+}
+
+function removeWord(placedEl, bankEl) {
+  if (answered) return;
+  const idx = placedWords.indexOf(placedEl.textContent);
+  if (idx > -1) placedWords.splice(idx, 1);
+  placedEl.remove();
+  bankEl.classList.remove('used');
+  selectedAnswer = placedWords.join(' ');
+  document.getElementById('checkBtn').disabled = placedWords.length === 0;
+}
+
+// SPEECH RECOGNITION
+let recognition = null;
+let isRecording = false;
+
+function setupSpeechRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.lang = 'de-DE';
+  r.continuous = false;
+  r.interimResults = true;
+  return r;
+}
+
+function toggleMic() {
+  if (!recognition) recognition = setupSpeechRecognition();
+  if (!recognition) {
+    document.getElementById('micStatus').textContent = "Speech recognition isn't supported in this browser. Try Chrome or Safari.";
+    setTimeout(() => skipSpeak(), 2000);
+    return;
+  }
+  
+  if (isRecording) {
+    recognition.stop();
+    return;
+  }
+  
+  isRecording = true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('micControl').classList.add('recording');
+  document.getElementById('micStatus').textContent = 'Listening... speak now';
+  document.getElementById('micTranscript').textContent = '';
+  
+  let finalTranscript = '';
+  recognition.onresult = (event) => {
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      } else {
+        interim += event.results[i][0].transcript;
+      }
+    }
+    document.getElementById('micTranscript').textContent = finalTranscript || interim;
+  };
+  
+  recognition.onerror = (e) => {
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micControl').classList.remove('recording');
+    if (e.error === 'not-allowed') {
+      document.getElementById('micStatus').textContent = 'Microphone access denied. You can skip this.';
+    } else {
+      document.getElementById('micStatus').textContent = "Didn't catch that. Try again or skip.";
+    }
+  };
+  
+  recognition.onend = () => {
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micControl').classList.remove('recording');
+    
+    if (finalTranscript) {
+      const grade = gradeSpeech(finalTranscript, currentQuestion.target);
+      handleSpeechResult(grade, finalTranscript);
+    } else {
+      document.getElementById('micStatus').textContent = "Didn't catch that. Try again or skip.";
+    }
+  };
+  
+  try {
+    recognition.start();
+  } catch(e) {
+    isRecording = false;
+  }
+}
+
+function gradeSpeech(spoken, target) {
+  // Forgiving grading: normalize, then check word overlap
+  const norm = s => s.toLowerCase()
+    .replace(/[.,!?]/g, '')
+    .replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss')
+    .trim();
+  
+  const targetNorm = norm(target);
+  const spokenNorm = norm(spoken);
+  
+  if (spokenNorm === targetNorm) return 'perfect';
+  
+  const targetWords = targetNorm.split(/\s+/);
+  const spokenWords = spokenNorm.split(/\s+/);
+  const matched = targetWords.filter(w => spokenWords.some(sw => sw === w || sw.includes(w) || w.includes(sw)));
+  const ratio = matched.length / targetWords.length;
+  
+  if (ratio >= 0.8) return 'good';
+  if (ratio >= 0.5) return 'partial';
+  return 'incorrect';
+}
+
+function handleSpeechResult(grade, transcript) {
+  answered = true;
+  questionsAnswered++;
+  
+  const isGood = grade === 'perfect' || grade === 'good';
+  if (isGood) questionsCorrect++;
+  
+  recordAnswer(currentQuestion.target, isGood);
+  
+  const body = document.getElementById('lessonBody');
+  const banner = document.createElement('div');
+  
+  if (grade === 'perfect') {
+    banner.className = 'feedback-banner correct';
+    banner.innerHTML = `<strong>Perfekt!</strong>That sounded great.`;
+  } else if (grade === 'good') {
+    banner.className = 'feedback-banner correct';
+    banner.innerHTML = `<strong>Sehr gut!</strong>I heard "${transcript}" — close enough!`;
+  } else if (grade === 'partial') {
+    banner.className = 'feedback-banner partial';
+    banner.innerHTML = `<strong>Almost!</strong>I heard "${transcript}". The target was "${currentQuestion.target}".`;
+  } else {
+    banner.className = 'feedback-banner incorrect';
+    banner.innerHTML = `<strong>Try again next time.</strong>I heard "${transcript}". The target was "${currentQuestion.target}".`;
+  }
+  body.insertBefore(banner, body.firstChild);
+  
+  // Speak it back to model the correct pronunciation
+  setTimeout(() => speak(currentQuestion.target), 400);
+  
+  if (!isGood) {
+    // Speak mode is forgiving — only lose hearts on total fail, not partial
+    if (grade === 'incorrect') {
+      state.hearts = Math.max(0, state.hearts - 1);
+      document.getElementById('lessonHearts').textContent = state.hearts;
+      saveState();
+      renderHeader();
+    }
+  }
+  
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = 'Continue';
+  document.getElementById('checkBtn').onclick = () => {
+    questionIdx++;
+    if (isReviewMode || isScenarioMode) showQuestion(); 
+    else showQuestion();
+  };
+}
+
+function skipSpeak() {
+  // Skip without penalty (speak mode is encouraging, not punishing)
+  questionIdx++;
+  if (isScenarioMode) {
+    scenarioIdx++;
+    showScenarioTurn();
+  } else {
+    showQuestion();
+  }
+}
+
+function checkAnswer() {
+  if (currentQuestion.type === 'speak') {
+    skipSpeak();
+    return;
+  }
+  
+  if (answered) {
+    questionIdx++;
+    showQuestion();
+    return;
+  }
+  
+  answered = true;
+  const correct = normalizeAnswer(selectedAnswer) === normalizeAnswer(currentQuestion.answer);
+  questionsAnswered++;
+  if (correct) questionsCorrect++;
+  
+  // Track for SRS
+  const wordToTrack = currentQuestion.word || currentQuestion.answer;
+  recordAnswer(wordToTrack, correct);
+  
+  const body = document.getElementById('lessonBody');
+  
+  if (currentQuestion.type === 'choice') {
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.style.pointerEvents = 'none';
+      const o = b.dataset.opt;
+      if (o === currentQuestion.answer) b.classList.add('correct');
+      else if (o === selectedAnswer && !correct) b.classList.add('incorrect');
+    });
+  } else if (currentQuestion.type === 'build') {
+    document.querySelectorAll('.word-tile').forEach(t => t.style.pointerEvents = 'none');
+    const buildArea = document.getElementById('buildArea');
+    buildArea.style.borderColor = correct ? 'var(--green)' : '#E63946';
+    buildArea.style.background = correct ? 'var(--green-soft)' : '#FFE0E3';
+  }
+  
+  const banner = document.createElement('div');
+  banner.className = 'feedback-banner ' + (correct ? 'correct' : 'incorrect');
+  banner.style.alignItems = 'center';
+  banner.style.gap = '12px';
+  banner.style.display = 'flex';
+  banner.innerHTML = `
+    <div style="width:48px; height:56px; flex-shrink:0;">${brunoSVG(correct ? 'cheer' : 'sad')}</div>
+    <div style="flex:1;">
+      ${correct
+        ? `<strong>Sehr gut!</strong>`
+        : `<strong>Almost!</strong>Correct: <em>${currentQuestion.answer}</em>`}
+    </div>
+  `;
+  body.insertBefore(banner, body.firstChild);
+  
+  if (correct) setTimeout(() => speak(currentQuestion.answer), 200);
+  
+  if (!correct) {
+    state.hearts = Math.max(0, state.hearts - 1);
+    state.lastHeartRefill = Date.now();
+    document.getElementById('lessonHearts').textContent = state.hearts;
+    saveState();
+    renderHeader();
+    
+    if (state.hearts === 0) {
+      setTimeout(() => quitLesson(true), 1500);
+      return;
+    }
+  }
+  
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').textContent = 'Continue';
+}
+
+function normalizeAnswer(s) {
+  return (s || '').toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.,!?]/g, '');
+}
+
+function showLessonComplete() {
+  const accuracy = questionsAnswered > 0 ? Math.round(questionsCorrect / questionsAnswered * 100) : 0;
+  const xpEarned = questionsCorrect * 3 + (accuracy >= 80 ? 5 : 0);
+  
+  if (!isReviewMode && currentUnit.id !== 'review') {
+    state.unitProgress[currentUnit.id] = accuracy / 100;
+    if (accuracy >= 60 && !state.completedUnits.includes(currentUnit.id)) {
+      state.completedUnits.push(currentUnit.id);
+    }
+  }
+  
+  awardXP(xpEarned);
+  saveState();
+  
+  const wasGoalAlreadyMet = (state.todayXP - xpEarned) >= state.dailyGoal;
+  const justHitGoal = !wasGoalAlreadyMet && state.todayXP >= state.dailyGoal;
+  
+  document.getElementById('footerBar').style.display = 'none';
+  
+  // Bruno's state matches lesson outcome
+  const brunoState = accuracy >= 80 ? 'cheer' : accuracy >= 50 ? 'wave' : 'sad';
+  
+  document.getElementById('lessonBody').innerHTML = `
+    <div class="complete-screen">
+      <div style="width: 140px; height: 168px; margin-bottom: 8px;">${brunoSVG(brunoState)}</div>
+      <h1 class="complete-title">${accuracy >= 80 ? 'Ausgezeichnet!' : accuracy >= 50 ? 'Gut gemacht!' : 'Keep going!'}</h1>
+      <p class="complete-subtitle">${currentUnit.name} ${accuracy >= 60 ? 'complete' : '· try once more for full credit'}</p>
+      
+      ${justHitGoal ? `
+        <div class="milestone-banner">
+          <span class="icon">🔥</span>
+          <div class="text">
+            <strong>${state.streak}-week streak!</strong>
+            <span>Daily goal hit · 5 days/week keeps it alive</span>
+          </div>
+        </div>
+      ` : ''}
+      
+      <div class="complete-stats">
+        <div class="stat-tile xp"><div class="stat-tile-value">+${xpEarned}</div><div class="stat-tile-label">XP earned</div></div>
+        <div class="stat-tile accuracy"><div class="stat-tile-value">${accuracy}%</div><div class="stat-tile-label">Accuracy</div></div>
+        <div class="stat-tile streak"><div class="stat-tile-value">${state.streak}🔥</div><div class="stat-tile-label">Streak</div></div>
+      </div>
+      
+      <button class="start-btn" style="max-width: 380px;" onclick="quitLesson()">
+        Back to path <span class="arrow">→</span>
+      </button>
+    </div>
+  `;
+}
+
+function quitLesson(noHearts) {
+  document.getElementById('lessonScreen').classList.remove('active');
+  document.getElementById('mainView').style.display = 'block';
+  document.body.style.overflow = '';
+  if (recognition) try { recognition.stop(); } catch(e) {}
+  isRecording = false;
+  renderDaily();
+  renderCurriculum();
+  if (noHearts) showOutOfHearts();
+}
+
+// ====================================================================
+// PART 8: MODALS
+// ====================================================================
+
+function showModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalBackdrop').classList.add('active');
+}
+
+function closeModal() { document.getElementById('modalBackdrop').classList.remove('active'); }
+
+function showOutOfHearts() {
+  showModal(`
+    <div class="modal-icon">💔</div>
+    <h2 class="modal-title">Out of hearts</h2>
+    <p class="modal-text">You'll get 1 heart back every 4 hours. Take a break — your floor goal is safe (5 days/week is all you need).</p>
+    <div class="modal-actions"><button class="modal-btn primary" onclick="closeModal()">Got it</button></div>
+  `);
+}
+
+function showGoalHit() {
+  showModal(`
+    <div class="modal-icon">✓</div>
+    <h2 class="modal-title">Goal hit for today</h2>
+    <p class="modal-text">${getThisWeekHits()} of 5 days this week. ${5 - getThisWeekHits()} more for your weekly streak.</p>
+    <div class="modal-actions"><button class="modal-btn primary" onclick="closeModal()">Let's go</button></div>
+  `);
+}
+
+function showWeekHit() {
+  showModal(`
+    <div class="modal-icon">🔥</div>
+    <h2 class="modal-title">${state.streak}-week streak!</h2>
+    <p class="modal-text">You hit your goal 5 days this week. That's how lasting habits are built.</p>
+    <div class="modal-actions"><button class="modal-btn primary" onclick="closeModal()">Hell yeah</button></div>
+  `);
+}
+
+function showFreezeEarned() {
+  showModal(`
+    <div class="modal-icon">🧊</div>
+    <h2 class="modal-title">Streak freeze earned</h2>
+    <p class="modal-text">You've got ${state.freezes} freeze${state.freezes > 1 ? 's' : ''} now. They auto-protect your streak if you miss extra days.</p>
+    <div class="modal-actions"><button class="modal-btn primary" onclick="closeModal()">Nice</button></div>
+  `);
+}
+
+function openSettings() {
+  const opts = [10, 20, 30, 50];
+  showModal(`
+    <h2 class="modal-title" style="margin-bottom: 20px;">Daily goal</h2>
+    <div class="goal-options" style="margin-bottom: 20px;">
+      ${opts.map(g => `
+        <div class="goal-option ${g === state.dailyGoal ? 'active' : ''}" onclick="setGoal(${g})">
+          <div class="goal-option-name">${g === 10 ? 'Casual' : g === 20 ? 'Regular' : g === 30 ? 'Serious' : 'Intense'}</div>
+          <div class="goal-option-meta">${g} XP daily</div>
+        </div>
+      `).join('')}
+    </div>
+    <button class="modal-btn secondary" onclick="closeModal()" style="width: 100%;">Done</button>
+  `);
+}
+
+function setGoal(g) {
+  state.dailyGoal = g;
+  saveState();
+  renderDaily();
+  showToast(`Goal set to ${g} XP/day`);
+  closeModal();
+}
+
+// ====================================================================
+// PART 9: ONBOARDING
+// ====================================================================
+
+let pickedGoal = 20;
+document.querySelectorAll('#goalOptions .goal-option').forEach(el => {
+  el.onclick = () => {
+    document.querySelectorAll('#goalOptions .goal-option').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    pickedGoal = parseInt(el.dataset.goal);
+  };
+});
+
+function finishOnboarding() {
+  state.onboarded = true;
+  state.dailyGoal = pickedGoal;
+  saveState();
+  document.getElementById('onboard').classList.remove('active');
+  
+  // Flow to profile setup if not yet set
+  if (!state.profile) {
+    showProfileScreen();
+  }
+}
+
+// ====================================================================
+// PROFILE / LOGIN SCREEN
+// ====================================================================
+
+let pickedAvatar = '🧑';
+
+function showProfileScreen() {
+  // Render Bruno waving in the slot
+  document.getElementById('profileBrunoSlot').innerHTML = brunoSVG('wave');
+  
+  // Pre-fill if editing existing profile
+  if (state.profile) {
+    document.getElementById('profileNameInput').value = state.profile.name || '';
+    pickedAvatar = state.profile.avatar || '🧑';
+  } else {
+    document.getElementById('profileNameInput').value = '';
+    pickedAvatar = '🧑';
+  }
+  
+  // Highlight active avatar
+  document.querySelectorAll('#avatarGrid .avatar-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.avatar === pickedAvatar);
+  });
+  
+  document.getElementById('profileScreen').classList.add('active');
+  setTimeout(() => document.getElementById('profileNameInput').focus(), 200);
+}
+
+// Wire avatar selection
+document.querySelectorAll('#avatarGrid .avatar-option').forEach(el => {
+  el.onclick = () => {
+    document.querySelectorAll('#avatarGrid .avatar-option').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    pickedAvatar = el.dataset.avatar;
+  };
+});
+
+function finishProfile() {
+  const name = document.getElementById('profileNameInput').value.trim() || 'friend';
+  state.profile = { name, avatar: pickedAvatar };
+  saveState();
+  document.getElementById('profileScreen').classList.remove('active');
+  
+  // Update UI everywhere
+  updateAvatarPill();
+  updateBrunoCard();
+  
+  // Bruno waves hello with their name
+  setTimeout(() => {
+    brunoReact('wave', `Hallo, ${name}!`, 2000);
+  }, 300);
+}
+
+function skipProfile() {
+  state.profile = { name: 'friend', avatar: '🧑' };
+  saveState();
+  document.getElementById('profileScreen').classList.remove('active');
+  updateAvatarPill();
+  updateBrunoCard();
+}
+
+function openProfile() {
+  showProfileScreen();
+}
+
+function updateAvatarPill() {
+  const pill = document.getElementById('avatarPill');
+  if (pill && state.profile) {
+    pill.textContent = state.profile.avatar;
+  }
+}
+
+window.openProfile = openProfile;
+window.finishProfile = finishProfile;
+window.skipProfile = skipProfile;
+
+// ====================================================================
+// PART 10: TOAST & AUDIO
+// ====================================================================
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    checkDailyRollover();
+    renderHeader();
+    renderDaily();
+  }
+});
+
+// ====================================================================
+// INIT
+// ====================================================================
+
+function init() {
+  // Expose for inline onclick handlers
+  window.launchScene3D = launchScene3D;
+  
+  // Show flows in order:
+  // 1. Onboarding (first launch only) — sets daily goal
+  // 2. Profile setup (after onboarding, or if profile missing) — sets name + avatar
+  // 3. Home screen
+  if (!state.onboarded) {
+    document.getElementById('onboard').classList.add('active');
+  } else if (!state.profile) {
+    // User onboarded in an old version before profiles existed
+    showProfileScreen();
+  }
+  
+  checkDailyRollover();
+  renderHeader();
+  renderDaily();
+  renderCurriculum();
+  updateAvatarPill();
+}
+
+init();
+</script>
+</body>
+</html>
